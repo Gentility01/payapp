@@ -1,0 +1,94 @@
+{% extends 'utils/__nav.html' %}
+
+{% block content %}
+    
+
+    
+
+    <!-- Secondary menu
+  ============================================= -->
+    <div class="bg-white">
+      <div class="container d-flex justify-content-center">
+        <ul class="nav nav-tabs nav-lg border-bottom-0">
+          <li class="nav-item"> <a class="nav-link" href="deposit-money.html">Deposit</a></li>
+          <li class="nav-item"> <a class="nav-link active" href="withdraw-money.html">Withdraw</a></li>
+        </ul>
+      </div>
+    </div>
+    <!-- Secondary menu end -->
+
+    <!-- Content
+  ============================================= -->
+    <div id="content" class="py-4">
+      <div class="container">
+
+        <!-- Steps Progress bar -->
+        <div class="row mt-4 mb-5">
+          <div class="col-lg-11 mx-auto">
+            <div class="row widget-steps">
+              <div class="col-4 step active">
+                <div class="step-name">Details</div>
+                <div class="progress">
+                  <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="step-dot"></a>
+              </div>
+              <div class="col-4 step disabled">
+                <div class="step-name">Confirm</div>
+                <div class="progress">
+                  <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="step-dot"></a>
+              </div>
+              <div class="col-4 step disabled">
+                <div class="step-name">Success</div>
+                <div class="progress">
+                  <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="step-dot"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h2 class="fw-400 text-center mt-3 mb-4">Withdraw Money</h2>
+        <div class="row">
+          <div class="col-md-9 col-lg-7 col-xl-6 mx-auto">
+            <!-- Withdraw Money Form
+        ============================================= -->
+            <div class="bg-white shadow-sm rounded p-3 pt-sm-5 pb-sm-5 px-sm-5 mb-4">
+              <div class="text-center bg-primary p-4 rounded mb-4">
+                <h3 class="text-10 text-white fw-400">${{ online_account.balance }}</h3>
+                <p class="text-white">Available Balance</p>
+                <a href="" class="btn btn-outline-light btn-sm shadow-none text-uppercase rounded-pill text-1">Withdraw
+                  Full Amount</a>
+              </div>
+              <form id="form-send-money" method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="withdrawto" class="form-label">Withdraw to</label>
+                  {{ form.bank_account}}
+                </div>
+                <div class="mb-3">
+                  <label for="youSend" class="form-label">Amount</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    {{ form.amount}}
+                  </div>
+                </div>
+                <p class="text-muted mt-4">Transactions fees <span class="float-end d-flex align-items-center">5.00
+                    USD</span></p>
+                <hr>
+                <p class="text-3 fw-500">Amount to Withdraw <span class="float-end">1,000.00 USD</span></p>
+                <div class="d-grid"><button class="btn btn-primary">Continue</button></div>
+              </form>
+            </div>
+            <!-- Withdraw Money Form end -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Content end -->
+
+    <!-- Footer
+  ============================================= -->
+  {% endblock content %}

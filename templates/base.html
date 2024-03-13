@@ -1,0 +1,245 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
+    <link href="images/favicon.png" rel="icon">
+    <title>PayApp</title>
+    <meta name="description"
+        content="This professional design html template is for build a Money Transfer and online payments website.">
+    <meta name="author" content="harnishdesign.net">
+
+    <!-- Web Fonts
+============================================= -->
+    <link rel="stylesheet"
+        href="../../../css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+
+    <!-- Stylesheet
+============================================= -->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/font-awesome/css/all.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/bootstrap-select/css/bootstrap-select.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/currency-flags/css/currency-flags.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/owl.carousel/assets/owl.carousel.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/stylesheet.css' %}">
+    <!-- Colors Css -->
+    <link id="color-switcher" type="text/css" rel="stylesheet" href="#">
+</head>
+
+<body>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div data-loader="dual-ring"></div>
+    </div>
+    <!-- Preloader End -->
+
+    <!-- Document Wrapper   
+============================================= -->
+    <div id="main-wrapper">
+
+        <!-- Header
+  ============================================= -->
+        <header id="header" class="bg-transparent header-text-light">
+            <div class="container">
+                <div class="header-row">
+                    <div class="header-column justify-content-start">
+                        <!-- Logo
+          ============================= -->
+                        <div class="logo me-3"> <a class="d-flex" href="{% url 'homepage' %}"
+                                title="PayApp - HTML Template"><b>
+                                    <h1>Pay<span style="color:#fff;">App</span></h1>
+                                </b></a> </div>
+                        <!-- Logo end -->
+                        <!-- Collapse Button
+          ============================== -->
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#header-nav"> <span></span> <span></span> <span></span> </button>
+                        <!-- Collapse Button end -->
+
+                        <!-- Primary Navigation
+          ============================== -->
+                        <nav class="primary-menu navbar navbar-expand-lg">
+                            <div id="header-nav" class="collapse navbar-collapse">
+                                <ul class="navbar-nav me-auto">
+                                    <li><a href="landing-page-send.html">Send</a></li>
+                                    <li><a href="landing-page-receive.html">Receive</a></li>
+                                    <li><a href="about-us.html">About Us</a></li>
+                                    <li><a href="help.html">Help</a></li>
+
+
+                                </ul>
+                            </div>
+                        </nav>
+                        <!-- Primary Navigation end -->
+                    </div>
+                    <div class="header-column justify-content-end">
+                        <!-- Login & Signup Link
+          ============================== -->
+
+                        {% if user.is_authenticated %}
+                        <nav class="login-signup navbar navbar-expand">
+                            <ul class="navbar-nav">
+                                <li><a href="{% url 'dashboard' %}">Dashboard</a> </li>
+                                <li class="align-items-center h-auto ms-sm-3"><a class="btn btn-primary"
+                                        href="{% url 'register:logout_view' %}">Logout</a></li>
+
+                            </ul>
+                        </nav>
+                        {% else %}
+
+                        <nav class="login-signup navbar navbar-expand">
+                            <ul class="navbar-nav">
+                                <li><a href="{% url 'register:login_view' %}">Login</a> </li>
+                                <li class="align-items-center h-auto ms-sm-3"><a class="btn btn-primary"
+                                        href="{% url 'register:signup_view' %}">Sign Up</a></li>
+                            </ul>
+                        </nav>
+                        {% endif %}
+                        <!-- Login & Signup Link end -->
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Header End -->
+
+
+
+        {% block content %}
+
+        {% endblock content %}
+
+        <!-- Footer
+  ============================================= -->
+        <footer id="footer" class="pb-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6 col-md mb-3 mb-md-0">
+                        <h4 class="text-3 text-muted text-uppercase fw-400 mb-3">Information</h4>
+                        <ul class="nav flex-column">
+                            <li class="nav-item"> <a class="nav-link" href="#">About Us</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">Careers</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">Affiliate</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">Fees</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6 col-md mb-3 mb-md-0">
+                        <h4 class="text-3 text-muted text-uppercase fw-400 mb-3">Services</h4>
+                        <ul class="nav flex-column">
+                            <li class="nav-item"> <a class="nav-link" href="#">Transfer Money</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">Send Money</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">Receive Money</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">Online Shopping</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">Pay bill</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6 col-md mb-3 mb-md-0">
+                        <h4 class="text-3 text-muted text-uppercase fw-400 mb-3">Help Center</h4>
+                        <ul class="nav flex-column">
+                            <li class="nav-item"> <a class="nav-link" href="#">Contact Us</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">Support</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">Help</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6 col-md mb-3 mb-md-0">
+                        <h4 class="text-3 text-muted text-uppercase fw-400 mb-3">Keep in touch</h4>
+                        <ul class="nav flex-column">
+                            <li class="nav-item"> <a class="nav-link" href="#">facebook</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">twitter</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">google</a></li>
+                            <li class="nav-item"> <a class="nav-link" href="#">youtube</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-12 col-lg-3">
+                        <h4 class="text-3 text-muted text-uppercase fw-400 mb-3">Subscribe</h4>
+                        <p>Subscribe to receive latest news and updates.</p>
+                        <div class="input-group newsletter">
+                            <input class="form-control" placeholder="Your Email Address" name="newsletterEmail"
+                                id="newsletterEmail" type="text">
+                            <button class="btn btn-secondary shadow-none px-3" type="button" data-bs-toggle="tooltip"
+                                title="Subscribe"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-copyright pt-4 mt-4">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg">
+                            <p class="text-center text-lg-start mb-2 mb-lg-0">Copyright &copy; 2022 <a
+                                    href="#">PayApp</a>. All Rights Reserved.</p>
+                        </div>
+                        <div class="col-lg d-lg-flex align-items-center justify-content-lg-end">
+                            <ul class="nav justify-content-center">
+                                <li class="nav-item"> <a class="nav-link active" href="#">Security</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="#">Terms</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="#">Privacy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Footer end -->
+
+    </div>
+    <!-- Document Wrapper end -->
+
+    <!-- Back to Top
+============================================= -->
+    <a id="back-to-top" data-bs-toggle="tooltip" title="Back to Top" href="javascript:void(0)"><i
+            class="fa fa-chevron-up"></i></a>
+
+    <!-- Video Modal
+============================================= -->
+    <div class="modal fade" id="videoModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content bg-transparent border-0">
+                <button type="button" class="btn-close btn-close-white ms-auto me-n3" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+                <div class="modal-body p-0">
+                    <div class="ratio ratio-16x9">
+                        <iframe id="video" src="" allow="autoplay;" allowfullscreen=""></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Video Modal end -->
+
+    <!-- Styles Switcher -->
+    <div id="styles-switcher" class="left">
+        <h2 class="text-3">Color Switcher</h2>
+        <hr>
+        <ul>
+            <li class="blue" data-bs-toggle="tooltip" title="Blue" data-path="css/color-blue.css"></li>
+            <li class="indigo" data-bs-toggle="tooltip" title="Indigo" data-path="css/color-indigo.css"></li>
+            <li class="purple" data-bs-toggle="tooltip" title="Purple" data-path="css/color-purple.css"></li>
+            <li class="pink" data-bs-toggle="tooltip" title="Pink" data-path="css/color-pink.css"></li>
+            <li class="red" data-bs-toggle="tooltip" title="Red" data-path="css/color-red.css"></li>
+            <li class="orange" data-bs-toggle="tooltip" title="Orange" data-path="css/color-orange.css"></li>
+            <li class="yellow" data-bs-toggle="tooltip" title="Yellow" data-path="css/color-yellow.css"></li>
+            <li class="teal" data-bs-toggle="tooltip" title="Teal" data-path="css/color-teal.css"></li>
+            <li class="cyan" data-bs-toggle="tooltip" title="Cyan" data-path="css/color-cyan.css"></li>
+            <li class="brown" data-bs-toggle="tooltip" title="Brown" data-path="css/color-brown.css"></li>
+        </ul>
+        <button class="btn btn-dark btn-sm border-0 fw-400 rounded-0 shadow-none" data-bs-toggle="tooltip" title="Green"
+            id="reset-color">Reset Default</button>
+        <button class="btn switcher-toggle"><i class="fas fa-cog"></i></button>
+    </div>
+    <!-- Styles Switcher End -->
+
+    <!-- Script -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap-select/js/bootstrap-select.min.js' %}"></script>
+    <script src="{% static 'vendor/owl.carousel/owl.carousel.min.js' %}"></script>
+    <!-- Style Switcher -->
+    <script src="{% static 'js/switcher.min.js' %}"></script>
+    <script src="{% static 'js/theme.js' %}"></script>
+</body>
+
+</html>
