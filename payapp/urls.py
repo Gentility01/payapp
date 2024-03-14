@@ -9,4 +9,5 @@ urlpatterns = [
     path("addbank", views.addbank, name="addbank"),
     path("withdraw", views.withdraw, name="withdraw"),
     path("withdraw/confirm", views.withdraw_money_confirm, name="withdraw_money_confirm"),
+    path("withdraw/success", views.SuccessView.as_view(), name="withdraw_success"),
 ]

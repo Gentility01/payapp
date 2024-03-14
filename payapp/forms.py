@@ -23,37 +23,23 @@ class BankAccountForm(forms.ModelForm):
             raise forms.ValidationError("Routing number must be a 10-digit number.")
         return routing_number
 
-class WithdrawForm(forms.Form):
-    amount = forms.DecimalField(max_digits=10, decimal_places=2)
-    bank_account = forms.ModelChoiceField(queryset=None)
+class WithdrawalForm(forms.Form):
+    bank_account = forms.ModelChoiceField(queryset=BankAccount.objects.none(),
+                    widget=forms.Select(
+                        attrs={'class': 'form-control'})
+                    )
+    amount = forms.DecimalField(min_value=0.01, 
+                    widget=forms.NumberInput(
+                        attrs={'class': 'form-control', 'placeholder': 'Enter amount'})
+                    )
 
-    def __init__(self, user, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['bank_account'].widget.attrs.update({
-            'class': 'form-control', 'placeholder': 'Select Bank Account'
-        })
-        self.fields['amount'].widget.attrs.update({
-            'class': 'form-control', 'placeholder': 'Enter Amount'
-        })
-        
-        # Filter the queryset based on the provided user
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(WithdrawalForm, self).__init__(*args, **kwargs)
         self.fields['bank_account'].queryset = BankAccount.objects.filter(user=user)
 
 
-class WithdrawConfirmationForm(forms.Form):
-    amount = forms.DecimalField(max_digits=10, decimal_places=2)
-    bank_account = forms.CharField()
 
-    def __init__(self, user, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        amount = cleaned_data.get('amount')
-        bank_account = cleaned_data.get('bank_account')
-
-     
-        return cleaned_data
 
     
    
