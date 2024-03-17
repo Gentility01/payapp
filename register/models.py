@@ -20,8 +20,8 @@ class User(AbstractUser):
 
 class OnlineAccount(TimeBasedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=10000.00)
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES.choices)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=1000)
 
     class Meta(TimeBasedModel.Meta):
         base_manager_name = "prefetch_manager"
@@ -73,11 +73,5 @@ class BankAccount(models.Model):
         return f"{self.bank_name}' xxxxxxxxxxx{self.account_number[-4:]}"
     
 
-class CreditCard(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    card_number = models.CharField(max_length=16)
-    expiration_date = models.DateField()
-    cvv = models.CharField(max_length=4)
 
-    def __str__(self):
-        return self.user.username + "'s Credit Card"
+

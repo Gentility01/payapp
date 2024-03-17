@@ -1,4 +1,5 @@
 from register.models import BankAccount
+from .models import Card
 from django import forms
 
 class BankAccountForm(forms.ModelForm):
@@ -39,9 +40,36 @@ class WithdrawalForm(forms.Form):
         self.fields['bank_account'].queryset = BankAccount.objects.filter(user=user)
 
 
+class CardForm(forms.ModelForm):
+    class Meta:
+        model = Card
+        fields = ['card_type',  'card_number', 'expiration_date', 'cvv']
+        widgets = {
+            'user': forms.Select(attrs={'class': 'form-control'}),
+            'card_type': forms.Select(attrs={'class': 'form-control'}),
+            # 'amount': forms.NumberInput(attrs={'class': 'form-control'}),
+            'card_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Eg. 1234 5678 9012 3456'}),
+            # 'expiration_date': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Expiration Date'}),
+            'cvv': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'E.g. 123'}),
 
+        }
 
+    # validates  card number and cvv
+    def clean_card_number(self):
+        card_number = self.cleaned_data['card_number']
+        if len(card_number) != 10 or not card_number.isdigit():
+            raise forms.ValidationError("Card number must be a 16-digit number.")
+        return card_number
     
-   
+    def clean_cvv(self):
+        cvv = self.cleaned_data['cvv']
+        if len(cvv) != 3 or not cvv.isdigit():
+            raise forms.ValidationError("CVV must be a 3-digit number.")
+        return cvv
+
+
+class DirectPaymentForm(forms.Form):
+    recipient_email = forms.EmailField(label="Recipient Email", widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    amount = forms.DecimalField(label="Amount", widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}))
 
     

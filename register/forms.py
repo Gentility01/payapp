@@ -18,12 +18,6 @@ class RegistrationForm(UserCreationForm):
         )
 
     def save(self, commit=True):
-        """
-        Save the user with the given full name by splitting it into first and last names.
-        
-        :param commit: A boolean indicating whether to save the user immediately
-        :return: The saved user object
-        """
         user = super().save(commit=False)
         full_name = self.cleaned_data["full_name"]
         first_name, last_name = full_name.split(" ", 1)
@@ -52,7 +46,7 @@ class RegistrationForm(UserCreationForm):
             'class': 'form-control', 'placeholder': 'Confirm your password'
         })
 
-
+        
 class OnlineAccountForm(forms.ModelForm):
     class Meta:
         model = OnlineAccount

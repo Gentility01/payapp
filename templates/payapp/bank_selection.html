@@ -1,0 +1,53 @@
+{% extends 'utils/__nav.html' %}
+
+{% block content %}
+
+
+
+{% include 'utils/_deposite_withdraw.html' %}
+
+<!-- Content
+  ============================================= -->
+<div id="content" class="py-4">
+    <div class="container">
+
+        <!-- Steps Progress bar -->
+        
+        <h2 class="fw-400 text-center mt-3 mb-4">Deposit Money</h2>
+        <div class="row">
+            <div class="col-md-9 col-lg-7 col-xl-6 mx-auto">
+                <div class="bg-white shadow-sm rounded p-3 pt-sm-4 pb-sm-5 px-sm-5 mb-4">
+                    <h3 class="text-5 fw-400 mb-3 mb-sm-4">Deposit Money via</h3>
+                    <hr class="mx-n3 mx-sm-n5 mb-4">
+                    <!-- Deposit Money Confirm
+            ============================================= -->
+                    <form id="form-send-money" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <input type="hidden" name="amount" value="{{ amount }}">
+                            <label for="paymentMethod" class="form-label">Bank</label>
+                            <select id="cardType" class="form-select" name="bank_account" required="">
+                                {% for bank_account in bank_accounts %}
+                                <option value="{{ bank_account.id }}">{{ bank_account.bank_name }} - {{ bank_account.account_number }}</option>
+                                {% endfor %}
+                                
+                            </select>
+                        </div>
+                        
+                        <hr class="mx-n3 mx-sm-n5 mb-4">
+                        <h3 class="text-5 fw-400 mb-4">Details</h3>
+                        <hr class="mx-n3 mx-sm-n5 mb-4">
+                        <p class="mb-1">Deposit Amount <span class="text-3 float-end">{{ amount }} USD</span></p>
+                        <p class="mb-1">Fees <span class="text-3 float-end">0.00 USD</span></p>
+                        <hr>
+                        
+                        <div class="d-grid"><button type="submit" class="btn btn-primary">Continure</button></div>
+                    </form>
+                    <!-- Deposit Money Confirm end -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Content end -->
+{% endblock content %}

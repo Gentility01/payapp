@@ -1,5 +1,5 @@
 from django.db.models import TextChoices
-
+from django.utils.translation import gettext_lazy as _
 class CURRENCY_CHOICES(TextChoices):
     US_DOLLAR = ("USD", "🇺🇸 US Dollars")
     EUROS = ("EUR", "🇪🇺 Euros")
@@ -10,6 +10,7 @@ class CURRENCY_CHOICES(TextChoices):
     CANADIAN_DOLLAR = ("CAD", "🇨🇦 Canadian Dollars")
     BITCOIN = ("BTC", "🔒 Bitcoin")
     ETHEREUM = ("ETH", "🧬 Ethereum")
+    NAIRA = ("NGN", "🇳🇬 Nigerian Naira")
 
 
 class TRASACTION_TYPE_CHOICES(TextChoices):
@@ -34,4 +35,15 @@ class BankNames(TextChoices):
     ZENITH_BANK = ("ZENITH_BANK", "Zenith Bank")
     UBA = ("UBA", "United Bank for Africa")
     STANBIC_IBTC = ("STANBIC_IBTC", "Stanbic IBTC Bank")
+
+
+class CARD_TYPE(TextChoices):
+    DEPOSITE = ("DEPOSITE", "Deposite")
+    CREDIT = ("CREDIT", "Credit")
+
+
+class TRANSACTION_STATUS(TextChoices):
+    PENDING = ("PENDING", "Pending")
+    SUCCESS = ("SUCCESS", "Success")
+    FAILED = ("FAILED", "Failed")
 

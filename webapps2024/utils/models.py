@@ -18,3 +18,5 @@ class TimeBasedModel(auto_prefetch.Model):
 
     objects = auto_prefetch.Manager()
     items = VisibleManager()
+
+

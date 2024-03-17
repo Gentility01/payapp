@@ -1,0 +1,54 @@
+{% extends 'utils/__nav.html' %}
+
+{% block content %}
+
+
+<!-- Content
+  ============================================= -->
+<div id="content">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-9 col-lg-7 col-xl-5 mx-auto">
+                <div class="bg-white shadow-md rounded p-3 pt-sm-4 pb-sm-5 px-sm-5">
+                    <h3 class="fw-400 text-center mb-4">Add Card</h3>
+                    <hr class="mx-n3 mx-sm-n5">
+                    <p class="lead text-center">Add Your Credit or Debit card</p>
+                    <form id="loginForm" method="POST">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Invalid entry !</strong> {{ form.errors}}.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label for="emailAddress" class="form-label">{{ form.card_type.label}}</label>
+
+                            {{ form.card_type}}
+                        </div>
+                        <div class="mb-3">
+                            <label for="emailAddress" class="form-label">{{ form.card_number.label}}</label>
+
+                            {{ form.card_number}}
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Card Verification Value</label>
+                            {{ form.cvv}}
+                        </div>
+
+                        <div class="d-grid mb-3"><button class="btn btn-primary" type="submit">Submit</button></div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Content end -->
+
+<!-- Footer
+  ============================================= -->
+{% endblock content %}

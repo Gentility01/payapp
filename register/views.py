@@ -1,11 +1,15 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect,render
 from django.views.generic import FormView, View
-from django.contrib.auth.views import LoginView , LogoutView 
+from django.contrib.auth.views import LoginView  
 from register.forms import RegistrationForm, OnlineAccountForm, LoginForm
 from register.models import OnlineAccount, User
+from payapp.models import CurrencyConversion
 from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.mixins import LoginRequiredMixin
+from webapps2024.utils.choices import CURRENCY_CHOICES
+from webapps2024.utils.manual_exchange_rate import MANUAL_EXCHANGE_RATES
 # Create your views here.
 
 class SignUpView(FormView):
@@ -16,35 +20,74 @@ class SignUpView(FormView):
     def form_valid(self, form):
         user = form.save(commit=False)
         user.set_password(form.cleaned_data['password1'])
+        user.email = form.cleaned_data['email']  # Set email separately
         user.save()
-        
+
         # Log in the user
         login(self.request, user)
         self.request.session['user_id'] = user.id  # Store user ID in session
-        
+
         return super().form_valid(form)
+
+    # adding widgets
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['currency_choices'] = CURRENCY_CHOICES
+        return context
     
 signup_view = SignUpView.as_view()
 
-
-class OnlineAccountSetupViews(FormView):
+class OnlineAccountSetupViews(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('register:login_view')
     template_name = "register/online_account_setup.html"
     form_class = OnlineAccountForm
     success_url = "/"
 
     def form_valid(self, form):
-        user_id = self.request.session.get('user_id')  # Retrieve user ID from session
-        if user_id:
-            try:
-                user = User.objects.get(id=user_id)
-                if not OnlineAccount.objects.filter(user=user).exists():
-                    OnlineAccount.objects.create(user=user, currency=form.cleaned_data['currency'])
-            except User.DoesNotExist:
-                return redirect('error_page')  # Redirect to an error page if user doesn't exist
+        # Retrieve the logged-in user
+        user = self.request.user
+
+        # Fetch the appropriate exchange rate for the selected currency
+        selected_currency = form.cleaned_data['currency']
+        try:
+            # Fetch the CurrencyConversion object for the selected currency
+            conversion_rate = CurrencyConversion.objects.get(currency_to=selected_currency)
+
+            # Calculate the initial amount based on the baseline amount and exchange rate
+            baseline_amount = 1000  # You can adjust this baseline amount as needed
+            initial_amount = baseline_amount * conversion_rate.exchange_rate
+
+        except CurrencyConversion.DoesNotExist:
+            # Handle the case where conversion rate for the selected currency doesn't exist
+            manual_exchange_rate = MANUAL_EXCHANGE_RATES.get(("USD", selected_currency))
+            if manual_exchange_rate is not None:
+                # Calculate the initial amount using the manual exchange rate
+                baseline_amount = 1000  # You can adjust this baseline amount as needed
+                initial_amount = baseline_amount * manual_exchange_rate
+
+            else:
+                # Handle the case where neither automatic nor manual conversion rates are available
+                error_message = "Conversion rate for the selected currency is not available."
+                return self.render_to_response(self.get_context_data(form=form, error_message=error_message))
+
+        # Create or update the OnlineAccount for the user
+        online_account, created = OnlineAccount.objects.get_or_create(user=user)
+        online_account.currency = selected_currency
+        online_account.balance = initial_amount
+        online_account.save()
+
         return super().form_valid(form)
 
-online_account_views = OnlineAccountSetupViews.as_view()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['currency_choices'] = CURRENCY_CHOICES
+        return context
 
+    def get(self, request, *args, **kwargs):
+        # Handle GET requests to clear any existing error messages
+        return super().get(request, *args, **kwargs)
+
+online_account_views = OnlineAccountSetupViews.as_view()
 # Login view
 class LoginView(FormView):
     template_name = "register/login.html"
@@ -75,9 +118,14 @@ class LoginView(FormView):
         return render(self.request, self.template_name, {'form': form, 'error': error})
 login_view = LoginView.as_view()
 
-def logout_view(request):
-    if request.method == 'POST':
-        logout(request)
-        return redirect('logout_success')
-    else:
+
+class LogoutView(LoginRequiredMixin, View):
+    login_url = reverse_lazy('register:login_view')
+    def get(self, request):
         return render(request, 'register/logout.html')
+
+    def post(self, request):
+        logout(request)
+        return redirect('/')
+
+logout_view = LogoutView.as_view()

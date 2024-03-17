@@ -1,20 +1,12 @@
 {% extends 'utils/__nav.html' %}
-
+{% load custom_filter %}
 {% block content %}
 
+<style>
 
+</style>
 
-<!-- Secondary menu
-  ============================================= -->
-<div class="bg-white">
-  <div class="container d-flex justify-content-center">
-    <ul class="nav nav-tabs nav-lg border-bottom-0">
-      <li class="nav-item"> <a class="nav-link" href="deposit-money.html">Deposit</a></li>
-      <li class="nav-item"> <a class="nav-link active" href="withdraw-money.html">Withdraw</a></li>
-    </ul>
-  </div>
-</div>
-<!-- Secondary menu end -->
+{% include 'utils/_deposite_withdraw.html' %}
 
 <!-- Content
   ============================================= -->
@@ -53,29 +45,31 @@
     <form id="form-withdraw-money-confirm" method="post">
       {% csrf_token %}
       <div class="row">
-          <div class="col-md-9 col-lg-7 col-xl-6 mx-auto">
-              <!-- Withdraw Money Confirm -->
-              <div class="bg-white shadow-sm rounded p-3 pt-sm-5 pb-sm-5 px-sm-5 mb-4">
-                  <p class="lead text-center alert alert-info">Withdraw money<br> to<br>
-                      <!-- Display bank account as plain text -->
-                      <span class="fw-500">Bank Account: {{ form.bank_account }}
-                      </span>
-                  </p>
-                  <!-- Display amount as plain text -->
-                  <p class="mb-2 mt-4">Amount to Withdraw <span class="text-3 float-end">${{ form.amount.value }}</span></p>
-  
-                  <hr>
-  
-                  <!-- Hidden input fields to store the field values -->
-                  <input type="hidden" name="amount" value="{{ form.amount.value }}">
-                  <input type="hidden" name="bank_account" value="{{ form.bank_account.value }}">
-                  <div class="d-grid"><button type="submit" class="btn btn-primary">Withdraw Money</button></div>
-              </div>
-              <!-- Withdraw Money Confirm end -->
+        <div class="col-md-9 col-lg-7 col-xl-6 mx-auto">
+          <!-- Withdraw Money Confirm -->
+          <div class="bg-white shadow-sm rounded p-3 pt-sm-5 pb-sm-5 px-sm-5 mb-4">
+            <p class="lead text-center alert alert-info">Withdraw money<br> to<br>
+              <!-- Display bank account as plain text -->
+              <span class="fw-300"> <b>{{ form.bank_account }}</b>
+              </span>
+            </p>
+            <!-- Display amount as plain text -->
+            <p class="mb-2 mt-4">Amount to Withdraw <span class="text-3 float-end">${{ form.amount.value }}</span></p>
+            
+
+          
+            <hr>
+            <p class="text-4 fw-500">Balance<span class="float-end">{{ online_account.balance|subtract:form.amount.value }}</span></p>
+            <!-- Hidden input fields to store the field values -->
+            <input type="hidden" name="amount" value="{{ form.amount.value }}">
+            <input type="hidden" name="bank_account" value="{{ form.bank_account.value }}">
+            <div class="d-grid"><button type="submit" class="btn btn-primary">Withdraw Money</button></div>
           </div>
+          <!-- Withdraw Money Confirm end -->
+        </div>
       </div>
-  </form>
-  
+    </form>
+
   </div>
 </div>
 <!-- Content end -->

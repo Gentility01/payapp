@@ -4,42 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logout</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
-    <!-- Add any additional CSS here -->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
             background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding-top: 50px;
-        }
-        .alert {
-            margin-bottom: 20px;
-        }
-        .login-link {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .login-link:hover {
-            text-decoration: underline;
+        .card {
+            width: 80%;
+            max-width: 400px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="alert alert-success" role="alert">
-            <h1 class="alert-heading">Logout Successful</h1>
-            <p>You have been successfully logged out.</p>
-            <p>
-                <a href="{% url 'register:login_view' %}" class="login-link">Login again</a>
-            </p>
+    <div class="card text-center">
+        <div class="card-body">
+            <h1 class="card-title">Logout</h1>
+            <p class="card-text">Are you sure you want to logout?</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary mr-2">Logout</button>
+                <a href="#" class="btn btn-secondary" onclick="history.back(); return false;">Go Back</a>
+            </form>
         </div>
     </div>
-    <!-- Add any additional scripts or libraries here -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

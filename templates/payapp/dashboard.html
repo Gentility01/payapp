@@ -53,7 +53,7 @@
                                     class="d-block text-10 text-light mt-2 mb-3"><i
                                         class="fas fa-credit-card"></i></span> <span
                                     class="text-5 d-block text-light mt-4 mb-3"><i class="far fa-circle "></i></span>
-                                <p class="mb-0"><a class="btn-link stretched-link" href="">Add Card</a></p>
+                                <p class="mb-0"><a class="btn-link stretched-link" href="{% url 'create_card' %}">Add Card</a></p>
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-3">
@@ -88,106 +88,24 @@
 
                     <!-- Transaction List
             =============================== -->
+            {% for transaction  in transaction_history %}
                     <div class="transaction-list">
                         <div class="transaction-item px-4 py-3" data-bs-toggle="modal"
                             data-bs-target="#transaction-detail">
                             <div class="row align-items-center flex-row">
-                                <div class="col-2 col-sm-1 text-center"> <span class="d-block text-4 fw-300">16</span>
-                                    <span class="d-block text-1 fw-300 text-uppercase">APR</span> </div>
-                                <div class="col col-sm-7"> <span class="d-block text-4">HDFC Bank</span> <span
-                                        class="text-muted">Withdraw to Bank account</span> </div>
+                                <div class="col-2 col-sm-1 text-center"> <span class="d-block text-4 fw-300">{{transaction.created_at|date:"j M"}}</span>
+                                     </div>
+                                <div class="col col-sm-7"> <span class="d-block text-4">{{ transaction.bank_account.bank_name}}</span> <span
+                                        class="text-muted">{{ transaction.description}}</span> </div>
                                 <div class="col-auto col-sm-2 d-none d-sm-block text-center text-3"> <span
-                                        class="text-warning" data-bs-toggle="tooltip" title="In Progress"><i
-                                            class="fas fa-ellipsis-h"></i></span> </div>
-                                <div class="col-3 col-sm-2 text-end text-4"> <span class="text-nowrap">- $562</span>
+                                        class="text-warning" data-bs-toggle="tooltip" title="In Progress">{{ transaction.status}}</i></span> </div>
+                                <div class="col-3 col-sm-2 text-end text-4"> <span class="text-nowrap">- ${{ transaction.amount}}</span>
                                     <span class="text-2 text-uppercase">(USD)</span> </div>
                             </div>
                         </div>
-                        <div class="transaction-item px-4 py-3" data-bs-toggle="modal"
-                            data-bs-target="#transaction-detail">
-                            <div class="row align-items-center flex-row">
-                                <div class="col-2 col-sm-1 text-center"> <span class="d-block text-4 fw-300">15</span>
-                                    <span class="d-block text-1 fw-300 text-uppercase">APR</span> </div>
-                                <div class="col col-sm-7"> <span class="d-block text-4">Envato Pty Ltd</span> <span
-                                        class="text-muted">Payment Received</span> </div>
-                                <div class="col-auto col-sm-2 d-none d-sm-block text-center text-3"> <span
-                                        class="text-success" data-bs-toggle="tooltip" title="Completed"><i
-                                            class="fas fa-check-circle"></i></span> </div>
-                                <div class="col-3 col-sm-2 text-end text-4"> <span class="text-nowrap">+ $562</span>
-                                    <span class="text-2 text-uppercase">(USD)</span> </div>
-                            </div>
-                        </div>
-                        <div class="transaction-item px-4 py-3" data-bs-toggle="modal"
-                            data-bs-target="#transaction-detail">
-                            <div class="row align-items-center flex-row">
-                                <div class="col-2 col-sm-1 text-center"> <span class="d-block text-4 fw-300">04</span>
-                                    <span class="d-block text-1 fw-300 text-uppercase">APR</span> </div>
-                                <div class="col col-sm-7"> <span class="d-block text-4">HDFC Bank</span> <span
-                                        class="text-muted">Withdraw to Bank account</span> </div>
-                                <div class="col-auto col-sm-2 d-none d-sm-block text-center text-3"> <span
-                                        class="text-success" data-bs-toggle="tooltip" title="Completed"><i
-                                            class="fas fa-check-circle"></i></span> </div>
-                                <div class="col-3 col-sm-2 text-end text-4"> <span class="text-nowrap">- $106</span>
-                                    <span class="text-2 text-uppercase">(USD)</span> </div>
-                            </div>
-                        </div>
-                        <div class="transaction-item px-4 py-3" data-bs-toggle="modal"
-                            data-bs-target="#transaction-detail">
-                            <div class="row align-items-center flex-row">
-                                <div class="col-2 col-sm-1 text-center"> <span class="d-block text-4 fw-300">28</span>
-                                    <span class="d-block text-1 fw-300 text-uppercase">MAR</span> </div>
-                                <div class="col col-sm-7"> <span class="d-block text-4">Patrick Cary</span> <span
-                                        class="text-muted">Refund</span> </div>
-                                <div class="col-auto col-sm-2 d-none d-sm-block text-center text-3"> <span
-                                        class="text-success" data-bs-toggle="tooltip" title="Completed"><i
-                                            class="fas fa-check-circle"></i></span> </div>
-                                <div class="col-3 col-sm-2 text-end text-4"> <span class="text-nowrap">+ $60</span>
-                                    <span class="text-2 text-uppercase">(USD)</span> </div>
-                            </div>
-                        </div>
-                        <div class="transaction-item px-4 py-3" data-bs-toggle="modal"
-                            data-bs-target="#transaction-detail">
-                            <div class="row align-items-center flex-row">
-                                <div class="col-2 col-sm-1 text-center"> <span class="d-block text-4 fw-300">28</span>
-                                    <span class="d-block text-1 fw-300 text-uppercase">MAR</span> </div>
-                                <div class="col col-sm-7"> <span class="d-block text-4">Patrick Cary</span> <span
-                                        class="text-muted">Payment Sent</span> </div>
-                                <div class="col-auto col-sm-2 d-none d-sm-block text-center text-3"> <span
-                                        class="text-danger" data-bs-toggle="tooltip" title="Cancelled"><i
-                                            class="fas fa-times-circle"></i></span> </div>
-                                <div class="col-3 col-sm-2 text-end text-4"> <span class="text-nowrap">- $60</span>
-                                    <span class="text-2 text-uppercase">(USD)</span> </div>
-                            </div>
-                        </div>
-                        <div class="transaction-item px-4 py-3" data-bs-toggle="modal"
-                            data-bs-target="#transaction-detail">
-                            <div class="row align-items-center flex-row">
-                                <div class="col-2 col-sm-1 text-center"> <span class="d-block text-4 fw-300">16</span>
-                                    <span class="d-block text-1 fw-300 text-uppercase">FEB</span> </div>
-                                <div class="col col-sm-7"> <span class="d-block text-4">HDFC Bank</span> <span
-                                        class="text-muted">Withdraw to Bank account</span> </div>
-                                <div class="col-auto col-sm-2 d-none d-sm-block text-center text-3"> <span
-                                        class="text-success" data-bs-toggle="tooltip" title="Completed"><i
-                                            class="fas fa-check-circle"></i></span> </div>
-                                <div class="col-3 col-sm-2 text-end text-4"> <span class="text-nowrap">- $1498</span>
-                                    <span class="text-2 text-uppercase">(USD)</span> </div>
-                            </div>
-                        </div>
-                        <div class="transaction-item px-4 py-3" data-bs-toggle="modal"
-                            data-bs-target="#transaction-detail">
-                            <div class="row align-items-center flex-row">
-                                <div class="col-2 col-sm-1 text-center"> <span class="d-block text-4 fw-300">15</span>
-                                    <span class="d-block text-1 fw-300 text-uppercase">FEB</span> </div>
-                                <div class="col col-sm-7"> <span class="d-block text-4">Envato Pty Ltd</span> <span
-                                        class="text-muted">Payment Received</span> </div>
-                                <div class="col-auto col-sm-2 d-none d-sm-block text-center text-3"> <span
-                                        class="text-success" data-bs-toggle="tooltip" title="Completed"><i
-                                            class="fas fa-check-circle"></i></span> </div>
-                                <div class="col-3 col-sm-2 text-end text-4"> <span class="text-nowrap">+ $1498</span>
-                                    <span class="text-2 text-uppercase">(USD)</span> </div>
-                            </div>
-                        </div>
+                       
                     </div>
+            {% endfor %}
                     <!-- Transaction List End -->
 
                     <!-- Transaction Item Details Modal

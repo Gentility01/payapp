@@ -65,6 +65,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "payapp.context_processors.account_context",
+                "payapp.context_processors.transaction_history_context",
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
@@ -120,6 +121,7 @@ USE_TZ = True
 
 MEDIA_URL = '/images/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'webapps2024/static/images')
+
 
 
 

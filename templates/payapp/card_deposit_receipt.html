@@ -1,0 +1,63 @@
+{% extends 'utils/__nav.html' %}
+
+{% block content %}
+  
+
+{% include 'utils/_deposite_withdraw.html' %}
+  
+  <!-- Content
+  ============================================= -->
+  <div id="content" class="py-4">
+    <div class="container"> 
+      
+      <!-- Steps Progress bar -->
+      <div class="row mt-4 mb-5">
+        <div class="col-lg-11 mx-auto">
+          <div class="row widget-steps">
+            <div class="col-4 step complete">
+              <div class="step-name">Details</div>
+              <div class="progress">
+                <div class="progress-bar"></div>
+              </div>
+              <span class="step-dot"></span> </div>
+            <div class="col-4 step complete">
+              <div class="step-name">Confirm</div>
+              <div class="progress">
+                <div class="progress-bar"></div>
+              </div>
+              <span class="step-dot"></span> </div>
+            <div class="col-4 step complete">
+              <div class="step-name">Success</div>
+              <div class="progress">
+                <div class="progress-bar"></div>
+              </div>
+              <span class="step-dot"></span> </div>
+          </div>
+        </div>
+      </div>
+      <h2 class="fw-400 text-center mt-3 mb-4">Deposit Money</h2>
+      <div class="row">
+        <div class="col-md-9 col-lg-7 col-xl-6 mx-auto"> 
+          <!-- Request Money Success
+          ============================================= -->
+          <div class="bg-white text-center shadow-sm rounded p-3 pt-sm-4 pb-sm-5 px-sm-5 mb-4">
+            <div class="my-4">
+              <p class="text-success text-20 lh-1"><i class="fas fa-check-circle"></i></p>
+              <p class="text-success text-8 fw-500 lh-1">Success!</p>
+              <p class="lead">Transactions Complete</p>
+            </div>
+            <p class="text-3 mb-4">Name <b>:</b> <span class="text-4 fw-500">{{ request.user.first_name }} {{ request.user.last_name }}</span> 
+              <p class="text-3 mb-4">Amount <b>:</b> <span class="text-4 fw-500">{{ amount }}</span> 
+            <p class="text-3 mb-4">Card Number <b>:</b> <span class="text-4 fw-500">XXXXXXXXXXXX-{{ card.card_number|slice:"-4:" }} </span> <a class="btn-link" href="#">Activity</a>.</p>
+            {% comment %} <p class="text-3 mb-4">You've successfully <span class="text-4 fw-500">$1000</span> Deposit Money, See transaction details under <a class="btn-link" href="#">Activity</a>.</p>
+            <p class="text-3 mb-4">You've successfully <span class="text-4 fw-500">$1000</span> Deposit Money, See transaction details under <a class="btn-link" href="#">Activity</a>.</p> {% endcomment %}
+            <div class="d-grid"><button class="btn btn-primary">Deposit Money Again</button></div>
+            <a class="text-3 d-inline-block btn-link mt-4" href="#"><i class="fas fa-print"></i> Print</a> </div>
+          <!-- Request Money Success end --> 
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Content end --> 
+  
+  {% endblock content %}
