@@ -1,0 +1,24 @@
+<!-- payment/payment_requests_list.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Requests List</title>
+</head>
+<body>
+    <h1>Payment Requests</h1>
+    <ul>
+        {% for transaction in payment_requests %}
+            <li>
+                <strong>Description:</strong> {{ transaction.description }} <br>
+                <strong>Amount:</strong> {{ transaction.amount }} <br>
+                <!-- Add any other transaction details you want to display -->
+                <a href="{% url 'notification_detail' transaction.id %}">View Details</a>
+            </li>
+        {% empty %}
+            <li>No payment requests found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

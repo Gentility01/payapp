@@ -1,5 +1,6 @@
 # exchange_rates.py
-
+from payapp.models import CurrencyConversion
+from decimal import Decimal, InvalidOperation
 MANUAL_EXCHANGE_RATES = {
     ("USD", "EUR"): 0.85,
     ("USD", "GBP"): 0.72,
@@ -18,7 +19,7 @@ MANUAL_EXCHANGE_RATES = {
     ("EUR", "CAD"): 1.45,
     ("EUR", "BTC"): 0.00003,
     ("EUR", "ETH"): 0.00045,
-    ("EUR", "NGN"): 510.25,
+    ("EUR", "NGN"): 1611.12,
     ("GBP", "USD"): 1.39,
     ("GBP", "EUR"): 1.18,
     ("GBP", "JPY"): 152.38,
@@ -92,3 +93,5 @@ MANUAL_EXCHANGE_RATES = {
     ("NGN", "BTC"): 0.00000006,
     ("NGN", "ETH"): 0.00000016,
 }
+
+

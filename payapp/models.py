@@ -39,8 +39,7 @@ class Transaction(TimeBasedModel):
 
     def __str__(self):
         return f"{self.sender.username} sent {self.amount} {self.currency} to {self.recipient.username}"
-    def __str__(self):
-        return f"{self.sender.username} sent {self.amount} {self.currency} to {self.recipient.username}"
+    
 
 
 
@@ -74,9 +73,24 @@ class TransactionHistory(TimeBasedModel):
     class Meta(TimeBasedModel.Meta):
         base_manager_name = "prefetch_manager"
         verbose_name_plural = "transactions"
+    
 
     def __str__(self):
         return f'{self.created_at} - {self.description} - {self.amount}'
+
+    def accept_request(self):
+        self.status = 'Accepted'
+        self.save()
+
+    def reject_request(self):
+        self.status = 'Rejected'
+        self.save()
+
+    def generate_notification(self):
+        recipient = self.recipient
+        message = f"You have received a payment request from {self.sender.username}. Amount: {self.amount}."
+        # Assuming you have a method to handle sending notifications to users
+        self.send_notification(recipient, message)
 
 
 class Card(TimeBasedModel):
@@ -86,5 +100,15 @@ class Card(TimeBasedModel):
     card_number = models.CharField(max_length=10, blank=True, null=True)
     expiration_date = models.DateField(blank=True, null=True)
     cvv = models.CharField(max_length=4, blank=True, null=True)
+
+
+class PaymentRequest(TimeBasedModel):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_payment_requests')
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_payment_requests')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    message = models.TextField()
+    status = models.CharField(max_length=11, choices=TRANSACTION_STATUS, blank=True, null=True)
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES.choices, blank=True, null=True)
+
 
 

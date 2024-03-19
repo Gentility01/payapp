@@ -2,10 +2,15 @@
   ============================================= -->
   <div class="bg-white">
     <div class="container d-flex justify-content-center">
-        <ul class="nav nav-tabs nav-lg border-bottom-0">
-            <li class="nav-item"> <a class="nav-link active" href="deposit-money.html">Deposit</a></li>
-            <li class="nav-item"> <a class="nav-link" href="withdraw-money.html">Withdraw</a></li>
-        </ul>
+      <ul class="nav nav-tabs nav-lg border-bottom-0">
+        <li class="nav-item"> 
+          <a class="nav-link {% if request.path == '/deposite' %}active{% endif %}" href="{% url 'deposite' %}">Deposit</a>
+        </li>
+        <li class="nav-item"> 
+          <a class="nav-link {% if request.path == '/withdraw' %}active{% endif %}" href="{% url 'withdraw' %}">Withdraw</a>
+        </li>
+      </ul>
     </div>
-</div>
-<!-- Secondary menu end -->
+  </div>
+  <!-- Secondary menu end -->
+  

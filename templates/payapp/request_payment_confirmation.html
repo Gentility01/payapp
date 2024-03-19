@@ -1,0 +1,33 @@
+<!-- Inside your request_payment_confirmation.html template -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Payment Confirmation</title>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</head>
+<body>
+    <h1>Request Payment Confirmation</h1>
+    
+    <p>Payment Request Details:</p>
+    <p>Amount: {{ transaction.amount }}</p>
+    <p>Message: {{ transaction.message }}</p>
+    
+    <!-- Add buttons for accepting and rejecting -->
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="accept_request">Accept</button>
+        <button type="submit" name="reject_request">Reject</button>
+    </form>
+
+    <!-- Add the URL for the success page -->
+    <a href="{% url 'payment_success' %}">Back to Success Page</a>
+</body>
+</html>

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Transaction, CurrencyConversion, TransactionHistory, Card
+from .models import Transaction, CurrencyConversion, TransactionHistory, Card, PaymentRequest
 # Register your models here.
 
 @admin.register(Transaction)
@@ -34,3 +34,12 @@ class TransactionHistoryAdmin(admin.ModelAdmin):
 @admin.register(Card)
 class CardAdmin(admin.ModelAdmin):
     list_display = ['user', 'card_number', 'expiration_date', 'cvv']
+
+@admin.register(PaymentRequest)
+class PaymentRequestAdmin(admin.ModelAdmin):
+    list_display = ['sender', 'recipient', 'amount',]
+    
+
+    # def get_currency(self, obj):
+    #     return obj.currency
+    # get_currency.short_description = 'Currency'

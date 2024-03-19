@@ -1,0 +1,11 @@
+ <!-- Secondary menu
+  ============================================= -->
+  <div class="bg-primary">
+    <div class="container d-flex justify-content-center">
+      <ul class="nav nav-pills alternate nav-lg border-bottom-0">
+        <li class="nav-item"> <a class="nav-link  {% if request.path == '/direct_payment' %}active{% endif %}" href="{% url 'direct_payment_view' %}">Send</a></li>
+        <li class="nav-item"> <a class="nav-link {% if request.path == '/payment_request' %}active{% endif %} " href="{% url 'payment_request_view' %}">Request</a></li>
+      </ul>
+    </div>
+  </div>
+  <!-- Secondary menu end --> 

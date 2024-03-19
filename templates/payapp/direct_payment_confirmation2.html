@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Confirmation</title>
+</head>
+<body>
+    <h1>Payment Confirmation</h1>
+    {% if form.errors %}
+  <div class="alert alert-danger" role="alert">
+    <strong>Error:</strong>
+    <ul>
+      {% for field, errors in form.errors.items %}
+        {% for error in errors %}
+          <li>{{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+
+    <h2>Transaction Details</h2>
+    <p><strong>Recipient Email:</strong> {{ payment_data.recipient_email }}</p>
+    <p><strong>Amount Sent:</strong> {{ payment_data.amount }}</p>
+    <p><strong>Sender Currency:</strong> {{ payment_data.sender_currency }}</p>
+    <p><strong>Recipient Currency:</strong> {{ payment_data.recipient_currency }}</p>
+    <p><strong>Converted Amount:</strong> {{ converted_amount }}</p>
+
+    <h2>Transaction Status</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <h2>Next Steps</h2>
+    <form method="post" action="{% url 'payment_confirmation' %}">
+        <input type="hidden" name="recipient_email" value="{{ payment_data.recipient_email }}">
+        <input type="hidden" name="amount" value="{{ payment_data.amount }}">
+        <input type="hidden" name="sender_currency" value="{{ payment_data.sender_currency }}">
+        <input type="hidden" name="recipient_currency" value="{{ payment_data.recipient_currency }}">
+        {% csrf_token %}
+        <button type="submit">Confirm Payment</button>
+    </form>
+</body>
+</html>

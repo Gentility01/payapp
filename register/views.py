@@ -54,7 +54,7 @@ class OnlineAccountSetupViews(LoginRequiredMixin, FormView):
             conversion_rate = CurrencyConversion.objects.get(currency_to=selected_currency)
 
             # Calculate the initial amount based on the baseline amount and exchange rate
-            baseline_amount = 1000  # You can adjust this baseline amount as needed
+            baseline_amount = 1000  
             initial_amount = baseline_amount * conversion_rate.exchange_rate
 
         except CurrencyConversion.DoesNotExist:
@@ -62,7 +62,7 @@ class OnlineAccountSetupViews(LoginRequiredMixin, FormView):
             manual_exchange_rate = MANUAL_EXCHANGE_RATES.get(("USD", selected_currency))
             if manual_exchange_rate is not None:
                 # Calculate the initial amount using the manual exchange rate
-                baseline_amount = 1000  # You can adjust this baseline amount as needed
+                baseline_amount = 1000  
                 initial_amount = baseline_amount * manual_exchange_rate
 
             else:

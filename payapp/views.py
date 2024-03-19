@@ -1,14 +1,19 @@
+import json
 from django.shortcuts import redirect, get_object_or_404, render
-from django.views.generic import TemplateView, FormView, DetailView
+from django.views.generic import TemplateView, FormView, DetailView, ListView, RedirectView, UpdateView
 from register.models import  BankAccount,OnlineAccount, User
-from payapp.models import TransactionHistory, Card, CurrencyConversion, Transaction
-from payapp.forms import BankAccountForm, WithdrawalForm, CardForm, DirectPaymentForm   
+from payapp.models import TransactionHistory, Card, CurrencyConversion, Transaction, PaymentRequest
+from payapp.forms import BankAccountForm, WithdrawalForm, CardForm, DirectPaymentForm, PaymentRequestForm
+from django.core.serializers.json import DjangoJSONEncoder 
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from decimal import Decimal
 from django.db import transaction
+from webapps2024.utils.manual_exchange_rate import MANUAL_EXCHANGE_RATES
+
+from django.contrib import messages
 
 
 
@@ -28,7 +33,7 @@ class AccountViews(LoginRequiredMixin, TemplateView):
 account =  AccountViews.as_view()
 
 
-
+# ---------------------------------------------------------------- Dashboard -------------------------------------------------------------------
 
 class  DashboardView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('register:login_view')
@@ -36,6 +41,8 @@ class  DashboardView(LoginRequiredMixin, TemplateView):
 
 dashboard = DashboardView.as_view()
 
+
+# ------------------------------------------------------------------Add Bank ------------------------------------------------------------------------
 class Addbank(LoginRequiredMixin, CreateView):
     login_url = reverse_lazy('register:login_view')
     model = BankAccount
@@ -49,7 +56,9 @@ class Addbank(LoginRequiredMixin, CreateView):
 
 addbank = Addbank.as_view()
 
-class CardCreateView(CreateView):
+# ------------------------------------------------------------------Add Credit card ------------------------------------------------------------------------
+class CardCreateView(LoginRequiredMixin, CreateView):
+    login_url = reverse_lazy('register:login_view')
     model = Card
     form_class = CardForm
     template_name = 'payapp/create_card.html'
@@ -61,6 +70,7 @@ class CardCreateView(CreateView):
 
 create_card = CardCreateView.as_view()
 
+# ------------------------------------------------------------------Withdraw money ------------------------------------------------------------------------
 class WithdrawalView(LoginRequiredMixin, FormView):
     login_url = reverse_lazy('register:login_view')
     template_name = 'payapp/withdraw.html'
@@ -83,6 +93,8 @@ class WithdrawalView(LoginRequiredMixin, FormView):
 
 withdraw = WithdrawalView.as_view()
 
+
+# ------------------------------------------------------------------Confirm Widthdrawal  view / widthdraw details ------------------------------------------------------------------------
 class ConfirmationView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('register:login_view')
     template_name = 'payapp/withdraw_confirm.html'
@@ -131,12 +143,14 @@ class ConfirmationView(LoginRequiredMixin, TemplateView):
 
 withdraw_money_confirm = ConfirmationView.as_view()
 
+# ------------------------------------------------------------------Widthdraw success ------------------------------------------------------------------------
 class SuccessView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('register:login_view')
     template_name = 'payapp/withdrawal_success.html'
 
 
 
+# ------------------------------------------------------------------Deposit money view  ------------------------------------------------------------------------
 class DepositeView(LoginRequiredMixin, TemplateView):
     template_name = 'payapp/deposite.html'
     login_url = reverse_lazy('register:login_view')
@@ -156,7 +170,10 @@ class DepositeView(LoginRequiredMixin, TemplateView):
 
 deposite = DepositeView.as_view()
 
-class BankSelectionView(TemplateView):
+
+# ------------------------------------------------------------------Bank Selection for withdrawal  ------------------------------------------------------------------------
+class BankSelectionView(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('register:login_view')
     template_name = "payapp/bank_selection.html"
 
     def get_context_data(self, **kwargs):
@@ -192,7 +209,9 @@ class BankSelectionView(TemplateView):
 bank_selection = BankSelectionView.as_view()
 
 
-class BankDepositReceiptView(DetailView):
+# ------------------------------------------------------------------Bank Deposit Receipt  ------------------------------------------------------------------------
+class BankDepositReceiptView(LoginRequiredMixin, DetailView):
+    login_url = reverse_lazy('register:login_view')
     model = BankAccount
     template_name = 'payapp/bank_deposit_receipt.html'
     context_object_name = 'bank_account'
@@ -207,7 +226,10 @@ class BankDepositReceiptView(DetailView):
 bank_deposit_receipt = BankDepositReceiptView.as_view()
 
 
-class CardSelectionView(TemplateView):
+
+# ------------------------------------------------------------------Select card for withdrawal ------------------------------------------------------------------------
+class CardSelectionView(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('register:login_view')
     template_name = "payapp/card_selection.html"
 
     def get_context_data(self, **kwargs):
@@ -237,7 +259,9 @@ class CardSelectionView(TemplateView):
 
 card_selection = CardSelectionView.as_view()
 
-class CardDepositReceiptView(DetailView):
+# ------------------------------------------------------------------ Card Deposit Receipt ------------------------------------------------------------------------
+class CardDepositReceiptView(LoginRequiredMixin, DetailView):
+    login_url = reverse_lazy('register:login_view')
     model = Card
     template_name = 'payapp/card_deposit_receipt.html'
     context_object_name = 'card'
@@ -252,47 +276,181 @@ class CardDepositReceiptView(DetailView):
 
 card_deposit_receipt = CardDepositReceiptView.as_view()
 
-class DirectPaymentViews(FormView):
-    template_name = "payapp/direct_payment.html"
+
+# ------------------------------------------------------------------Direct Payment or Send money ------------------------------------------------------------------------
+class DirectPaymentFormView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('register:login_view')
+    template_name = "payapp/direct_payment_form.html"
     form_class = DirectPaymentForm
-    success_url = reverse_lazy('payment_success')
+    success_url = reverse_lazy('payment_confirmation')
 
     def form_valid(self, form):
-        sender = self.request.user
-        recipient_email = form.cleaned_data['recipient_email']
-        amount = form.cleaned_data['amount']
+        # Store form data in session for display on the next page
+        payment_data = form.cleaned_data
+        # Convert Decimal objects to strings
+        payment_data['amount'] = str(payment_data['amount'])
+        self.request.session['payment_data'] = payment_data  # Store payment data directly
+        return redirect('payment_confirmation')
 
-        recipient = get_object_or_404(User, email=recipient_email)
+    def form_invalid(self, form):
+        messages.error(self.request, "Please correct the errors below.")
+        return super().form_invalid(form)
+
+
+# ------------------------------------------------------------------Direct or send money confirmation ------------------------------------------------------------------------
+class DirectPaymentConfirmationView(LoginRequiredMixin, FormView):
+    template_name = "payapp/direct_payment_confirmation.html"
+    form_class = DirectPaymentForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        payment_data = self.request.session.get('payment_data', {})
+        recipient_email = payment_data.get('recipient_email')
+
+        try:
+            # Get the recipient user by email
+            recipient = User.objects.get(email=recipient_email)
+            context['recipient'] = recipient
+        except User.DoesNotExist:
+            context['recipient_not_found'] = True  # Set flag indicating recipient not found
+            context['error_message'] = "Recipient user not found."
         
+        context['payment_data'] = payment_data
+        return context
+
+    def form_valid(self, form):
+        payment_data = self.request.session.get('payment_data', {})
+        sender = self.request.user
+        recipient_email = payment_data.get('recipient_email')
+        amount = payment_data.get('amount')
+
+        # Check if the recipient email is the same as the sender's email
+        if sender.email == recipient_email:
+            messages.error(self.request, "You cannot send a payment request to yourself.")
+            return redirect('payment_failed')
+
+        try:
+            # Try to get the recipient user by email
+            recipient = User.objects.get(email=recipient_email)
+        except User.DoesNotExist:
+            messages.error(self.request, "Recipient user not found.")
+            return redirect('payment_failed')
+
         # Check if the sender has enough funds in their account
         sender_account = sender.onlineaccount
-        if sender_account.balance < amount:
+        if sender_account.balance < float(amount):
             # Sender doesn't have enough funds
             messages.error(self.request, "Insufficient funds.")
-            return self.form_invalid(form)
-        
-        # Perform currency conversion if necessary
-        if sender_account.currency != recipient.onlineaccount.currency:
-            conversion_rate = get_object_or_404(CurrencyConversion, currency_from=sender_account.currency, currency_to=recipient.onlineaccount.currency)
-            converted_amount = amount * conversion_rate.exchange_rate
-        else:
-            converted_amount = amount
+            return redirect('payment_failed')
         
         # Deduct the amount from the sender's account and add it to the recipient's account within a single transaction
         with transaction.atomic():
-            sender_account.balance -= amount
+            sender_account.balance -= int(amount)
             sender_account.save()
             recipient_account = recipient.onlineaccount
-            recipient_account.balance += converted_amount
+            recipient_account.balance += int(amount)  # No currency conversion needed
             recipient_account.save()
             
             # Create a transaction record for the payment
             Transaction.objects.create(sender=sender, recipient=recipient, amount=amount, transaction_type="direct_payment")
             
-            # Create a transaction history record for the payment
-            TransactionHistory.objects.create(sender=sender, recipient=recipient, status="✔️", amount=amount, description="Direct payment")
-        messages.success(self.request, "Payment successful.")
+            # Create transaction history records for both sender and recipient
+            TransactionHistory.objects.create(sender=sender, recipient=recipient, status="✔️", amount=amount, description="Direct payment (sent)")
+            TransactionHistory.objects.create(sender=recipient, recipient=sender, status="📥", amount=amount, description="Direct payment (received)")
+        
+        # Clear session data
+        self.request.session.pop('payment_data', None)
+
+        return redirect('payment_success')
+
+
+# ------------------------------------------------------------------Successful Payment Trasaction ------------------------------------------------------------------------
+class PaymentSuccess( LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('register:login_view')
+    template_name = "payapp/payment_success.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['payment_data'] = self.request.session.get('payment_data', {})
+        return context
+
+# ------------------------------------------------------------------Payment Transanction Fialed  ------------------------------------------------------------------------
+class PaymentFailed(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('register:login_view')
+    template_name = "payapp/payment_failed.html"
+
+
+payment_failed = PaymentFailed.as_view()
+payment_success_view = PaymentSuccess.as_view()
+direct_payment_view = DirectPaymentFormView.as_view()
+direct_payment_confirmation_view = DirectPaymentConfirmationView.as_view()
+
+
+# ------------------------------------------------------------------Request Payment ------------------------------------------------------------------------
+class CreatePaymentRequestView(CreateView):
+    model = PaymentRequest
+    form_class = PaymentRequestForm
+    template_name = 'payapp/request_payment.html'
+    success_url = reverse_lazy('payment_request_success')
+
+    def form_valid(self, form):
+        recipient_email = form.cleaned_data['recipient_email']
+        # recipient = User.objects.get(email=recipient_email)
+        # Check if the recipient exists
+        try:
+            recipient = User.objects.get(email=recipient_email)
+        except User.DoesNotExist:
+            messages.error(self.request, 'Recipient user not found!')
+            return redirect('payment_failed')
+        # Check if the recipient's email is the same as the sender's email
+        if recipient == self.request.user:
+            messages.error(self.request, 'You cannot send a payment request to yourself!')
+            return redirect('payment_failed')
+         
+        
+        form.instance.sender = self.request.user
+        form.instance.recipient = recipient
+        form.instance.status = 'pending'
+        
+        # Create transaction history records for both sender and recipient
+        sender = self.request.user
+        amount = form.cleaned_data['amount']
+        TransactionHistory.objects.create(sender=sender, recipient=recipient, status="✔️", amount=amount, description="Request Payment (sent)")
+        TransactionHistory.objects.create(sender=recipient, recipient=sender, status="📥", amount=amount, description="Request Payment (received)")
+
+        messages.success(self.request, 'Payment request sent successfully!')
         return super().form_valid(form)
 
-direct_payment_view = DirectPaymentViews.as_view()
+request_payment_view = CreatePaymentRequestView.as_view()
 
+
+class PaymentRequestSuccess(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('register:login_view')
+    template_name = 'payapp/payment_request_success.html'
+
+payment_request_success = PaymentRequestSuccess.as_view()
+class PaymentRequestListView(LoginRequiredMixin, ListView):
+    model = PaymentRequest
+    template_name = 'payapp/payment_request_list.html'
+    context_object_name = 'payment_requests'
+
+    def get_queryset(self):
+        return PaymentRequest.objects.filter(recipient=self.request.user)
+
+payment_request_list = PaymentRequestListView.as_view()
+
+class RespondToPaymentRequestView(UpdateView):
+    model = PaymentRequest
+    fields = ['status']
+    template_name = 'respond_to_payment_request.html'
+    success_url = reverse_lazy('payment_request_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Payment request response updated!')
+        return super().form_valid(form)
+
+    def get_queryset(self):
+        return PaymentRequest.objects.filter(recipient=self.request.user)
+
+
+        

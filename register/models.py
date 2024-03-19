@@ -21,7 +21,7 @@ class User(AbstractUser):
 class OnlineAccount(TimeBasedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES.choices)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=1000)
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     class Meta(TimeBasedModel.Meta):
         base_manager_name = "prefetch_manager"

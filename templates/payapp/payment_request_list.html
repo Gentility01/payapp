@@ -1,0 +1,31 @@
+<!-- payment_request_list.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Requests</title>
+</head>
+<body>
+    <h1>Payment Requests</h1>
+
+    <ul>
+        {% for payment_request in payment_requests %}
+            <li>
+                <strong>From:</strong> {{ payment_request.sender.username }}<br>
+                <strong>Amount:</strong> {{ payment_request.amount }} {{ payment_request.currency }}<br>
+                <strong>Message:</strong> {{ payment_request.message }}<br>
+                <strong>Status:</strong> {{ payment_request.status }}<br>
+                {% if payment_request.status == 'pending' %}
+                    <form method="post" action="{% url 'respond_to_payment_request' payment_request.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" name="action" value="accept">Accept</button>
+                        <button type="submit" name="action" value="reject">Reject</button>
+                    </form>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

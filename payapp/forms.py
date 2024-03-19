@@ -1,6 +1,13 @@
 from register.models import BankAccount
 from .models import Card
 from django import forms
+from webapps2024.utils.choices import CURRENCY_CHOICES
+from .models import PaymentRequest
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
+ 
 
 class BankAccountForm(forms.ModelForm):
     class Meta:
@@ -69,7 +76,47 @@ class CardForm(forms.ModelForm):
 
 
 class DirectPaymentForm(forms.Form):
-    recipient_email = forms.EmailField(label="Recipient Email", widget=forms.EmailInput(attrs={'class': 'form-control'}))
-    amount = forms.DecimalField(label="Amount", widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}))
+    amount = forms.DecimalField(
+        label="Amount", required=False, widget=forms.NumberInput(
+            attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Amount'})
+    )
+    recipient_email = forms.EmailField(
+        label="Recipient Email", required=False, widget=forms.EmailInput(
+            attrs={'class': 'form-control', 'placeholder': 'Recipient Email'})
+    )
+   
+    senders_currency = forms.ChoiceField(
+        label="Sender Currency", required=False, choices=CURRENCY_CHOICES.choices, 
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    recipient_currency = forms.ChoiceField(
+        label="Sender Currency", required=False, choices=CURRENCY_CHOICES.choices, 
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+
+
+class PaymentRequestForm(forms.ModelForm):
+    recipient_email = forms.EmailField(label='Recipient Email',
+                                       widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Recipient Email'}))
+    amount = forms.DecimalField(label='Amount',
+                                 widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Amount'}))
+    message = forms.CharField(label='Message', required=False,
+                               widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Message'}))
+    currency = forms.ChoiceField(label='Currency', choices=CURRENCY_CHOICES.choices,
+                                  widget=forms.Select(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = PaymentRequest
+        fields = ['recipient_email', 'amount', 'message', 'currency']
+
+    # def clean_recipient_email(self):
+    #     recipient_email = self.cleaned_data.get('recipient_email')
+    #     recipient = User.objects.filter(email=recipient_email).first()
+    #     if recipient is None:
+    #         raise forms.ValidationError("Invalid recipient email.")
+    #     return recipient
 
     
+    
+
