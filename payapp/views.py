@@ -423,22 +423,27 @@ class CreatePaymentRequestView(CreateView):
 
 request_payment_view = CreatePaymentRequestView.as_view()
 
-
+# -----------------------------------------------------------------------------------Payment Request successful ------------------------------------------------------------------------
 class PaymentRequestSuccess(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('register:login_view')
     template_name = 'payapp/payment_request_success.html'
 
 payment_request_success = PaymentRequestSuccess.as_view()
+
+
+# ------------------------------------------------------------------------------------Payment Request List------------------------------------------------------------------------
 class PaymentRequestListView(LoginRequiredMixin, ListView):
     model = PaymentRequest
     template_name = 'payapp/payment_request_list.html'
     context_object_name = 'payment_requests'
 
     def get_queryset(self):
-        return PaymentRequest.objects.filter(recipient=self.request.user)
+        return PaymentRequest.objects.filter(recipient=self.request.user).order_by('-created_at')
 
 payment_request_list = PaymentRequestListView.as_view()
 
+
+# ------------------------------------------------------------------------------------Respond to Payment Request------------------------------------------------------------------------
 class RespondToPaymentRequestView(UpdateView):
     model = PaymentRequest
     fields = ['status']
@@ -446,11 +451,34 @@ class RespondToPaymentRequestView(UpdateView):
     success_url = reverse_lazy('payment_request_list')
 
     def form_valid(self, form):
-        messages.success(self.request, 'Payment request response updated!')
+        payment_request = form.instance
+        sender_account = OnlineAccount.objects.get(user=payment_request.sender)
+        recipient_account = OnlineAccount.objects.get(user=payment_request.recipient)
+
+        if payment_request.status == 'accepted':
+            if sender_account.balance >= payment_request.amount:
+                sender_account.balance -= payment_request.amount
+                recipient_account.balance += payment_request.amount
+                sender_account.save()
+                recipient_account.save()
+                messages.success(self.request, 'Payment request accepted!')
+            else:
+                messages.error(self.request, 'Insufficient balance to fulfill the payment request.')
+                return redirect('payment_failed')
+        elif payment_request.status == 'rejected':
+            messages.info(self.request, 'Payment request rejected!')
+        
         return super().form_valid(form)
 
     def get_queryset(self):
         return PaymentRequest.objects.filter(recipient=self.request.user)
 
+
+# ------------------------------------------------------------------------------------Transaction List------------------------------------------------------------------------
+class TransactionList(LoginRequiredMixin, ListView):
+    model = Transaction
+    template_name = 'payapp/transaction_list.html'
+    
+transaction_list = TransactionList.as_view()
 
         

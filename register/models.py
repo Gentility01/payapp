@@ -45,7 +45,7 @@ class UserProfile(TimeBasedModel):
     address = models.CharField(max_length=255, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     profile_picture = ResizedImageField(
-        default="images/default.png", 
+        
         size=[50, 50], quality=100, crop=['middle', 'center'],
         force_format='PNG', upload_to=MediaHelper.get_image_upload_path, blank=True, null=True
     )

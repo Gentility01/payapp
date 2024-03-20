@@ -1,31 +1,117 @@
-<!-- payment_request_list.html -->
+{% extends 'utils/__nav.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Requests</title>
-</head>
-<body>
-    <h1>Payment Requests</h1>
+{% block content %}
 
-    <ul>
-        {% for payment_request in payment_requests %}
-            <li>
-                <strong>From:</strong> {{ payment_request.sender.username }}<br>
-                <strong>Amount:</strong> {{ payment_request.amount }} {{ payment_request.currency }}<br>
-                <strong>Message:</strong> {{ payment_request.message }}<br>
-                <strong>Status:</strong> {{ payment_request.status }}<br>
-                {% if payment_request.status == 'pending' %}
-                    <form method="post" action="{% url 'respond_to_payment_request' payment_request.pk %}">
-                        {% csrf_token %}
-                        <button type="submit" name="action" value="accept">Accept</button>
-                        <button type="submit" name="action" value="reject">Reject</button>
-                    </form>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+
+
+<!-- Content
+  ============================================= -->
+<div id="content" class="py-4">
+    <div class="container">
+        <div class="row">
+          
+            {% include 'utils/__sidebar.html' %}
+
+            <!-- Middle Panel
+        ============================================= -->
+            <div class="col-lg-9">
+
+                <!-- Notifications
+          ============================================= -->
+                <div class="bg-white shadow-sm rounded py-4 mb-4">
+                    <h3 class="text-5 fw-400 px-4 mb-4">Notifications</h3>
+                    <hr class="mb-0">
+
+                    <!-- Notifications List
+            =============================== -->
+                    <div class="notifications-list">
+                        
+                        {% for payment_request in payment_requests %}
+                        {% comment %} <div class="notifications-item px-4 py-3" data-bs-toggle="modal" {% endcomment %}
+                        <div class="notifications-item px-4 py-3"
+                            data-bs-target="#notifications-detail">
+                            <div class="row align-items-center flex-row">
+                                <div class="col-2 col-sm-1 text-center text-8 icon-bell"><i class="far fa-bell"></i>
+                                </div>
+                                <div class="col col-sm-10">
+                                    <h4 class="text-3 mb-1">A new Transaction Request from {{ payment_request.sender.first_name.capitalize }} {{payment_request.sender.last_name.capitalize }}
+                                        amount: {{ payment_request.amount }} {{ payment_request.currency }}
+                                        <p><span class="text-muted">{{ payment_request.sender.first_name.capitalize }}'s message: "{{ payment_request.message }}"</span></p>
+                                        <span class="text-muted">{{payment_request.created_at}}</span>
+                                    </h4>
+                                     <br>
+                                    {% if payment_request.status == 'pending' %}
+                                    <form method="post" action="{% url 'respond_to_payment_request' payment_request.pk %}">
+                                        {% csrf_token %}
+                                        <button class="btn btn-sm btn-outline-secondary" type="submit" name="action" value="accept">Accept</button>
+                                        <button class="btn btn-sm btn-outline-danger"type="submit" name="action" value="reject">Decline</button>
+                                    
+                                    </form>
+                                    {% endif %}
+                                    
+                                </div>
+                                <div class="col-1 text-end text-muted"><i class="fas fa-chevron-right"></i></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% comment %} <div class="text-center mt-4"> <a class="btn btn-sm btn-outline-secondary shadow-none"
+                                href="#">Load More</a> </div> {% endcomment %}
+                    </div>
+                    <!-- Notifications List End -->
+
+                    <!-- Notifications Item Details Modal
+            =========================================== -->
+                    <div id="notifications-detail" class="modal fade" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered modal-dialog-scrollable"
+                            role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title d-flex align-items-center fw-400"><span
+                                            class="text-6 me-2"><i class="far fa-bell"></i></span> Notifications Details
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-4 text-3">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <h4 class="text-5">Updates to our privacy policy. Please read.</h4>
+                                            <p class="text-muted">16 Oct 2020</p>
+                                            <p class="fw-500">Dear Smith Rhodes,</p>
+                                            <p>We have updated our <a href="#"><u>privacy policy</u></a> to make it
+                                                easier for you to understand how we collect, use, disclose, store, and
+                                                transfer your information. It also reflects recent developments in
+                                                applicable privacy laws. The changes are effective as of <strong
+                                                    class="fw-500">Jan 01, 2021</strong> so please take the time to
+                                                familiarize yourself with our privacy practices.</p>
+                                            <p>The changes will take effect automatically and by continuing to use our
+                                                services you agree to the updated <a href="#"><u>privacy policy</u></a>.
+                                            </p>
+                                            <p>Thank You,<br>
+                                                Payyed Team</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="btn-group m-0 w-100 row">
+                                        <button type="button" class="btn btn-secondary shadow-none col-6"><span
+                                                class="me-1"><i class="far fa-eye-slash"></i></span>Mark as
+                                            Unread</button>
+                                        <button type="button" class="btn btn-danger shadow-none col-6"><span
+                                                class="me-1"><i class="far fa-trash-alt"></i></span>Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Notifications Item Details Modal End -->
+
+                </div>
+                <!-- Notifications End -->
+
+            </div>
+            <!-- Middle Panel End -->
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -64,6 +64,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                "payapp.context_processors.payment_request_list",
                 "payapp.context_processors.account_context",
                 "payapp.context_processors.transaction_history_context",
                 "django.template.context_processors.debug",

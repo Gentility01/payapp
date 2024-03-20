@@ -1,6 +1,6 @@
 from register.models import UserProfile, OnlineAccount, BankAccount
 from django.core.exceptions import ObjectDoesNotExist
-from payapp.models import TransactionHistory
+from payapp.models import TransactionHistory, PaymentRequest
 
 
 # function for  account
@@ -46,5 +46,18 @@ def transaction_history_context(request):
     context = {}
     if request.user.is_authenticated:
         transaction_history = TransactionHistory.objects.filter(sender=request.user).order_by('-created_at')
+        # get only 5 latest transactions
+        
+        current_transaction_history = TransactionHistory.objects.filter(sender=request.user).order_by('-created_at')[:5]
+        context['latest_transaction_history'] = current_transaction_history
         context['transaction_history'] = transaction_history
     return context
+
+
+def payment_request_list(request):
+    if request.user.is_authenticated:
+        payment_requests = PaymentRequest.objects.filter(recipient=request.user)[:3]
+    else:
+        payment_requests = None
+    return {'payment_requests': payment_requests}
+

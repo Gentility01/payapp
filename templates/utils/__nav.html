@@ -62,7 +62,7 @@
               <div id="header-nav" class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
                   <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                  <li><a href="transactions.html">Transactions</a></li>
+                  <li><a href="{% url 'transaction_list' %}">Transactions</a></li>
                   <li><a href="{% url 'direct_payment_view' %}">Send/Request</a></li>
 
 
@@ -88,16 +88,16 @@
                 <li class="dropdown notifications"> <a class="dropdown-toggle" href="#"><span class="text-5"><i
                         class="far fa-bell"></i></span><span class="count">3</span></a>
                   <ul class="dropdown-menu">
+                    
                     <li class="text-center text-3 py-2">Notifications (3)</li>
                     <li class="dropdown-divider mx-n3"></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-bell"></i>A new digital FIRC document is
-                        available for you to download<span class="text-1 text-muted d-block">22 Jul 2021</span></a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-bell"></i>Updates to our privacy policy.
-                        Please read.<span class="text-1 text-muted d-block">04 March 2021</span></a></li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-bell"></i>Update about PayApp fees<span
-                          class="text-1 text-muted d-block">18 Feb 2021</span></a></li>
+                    
+                    {% for payment_request in payment_requests %}
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-bell"></i>payment request from {{payment_request.sender.first_name.capitalize }} {{payment_request.sender.last_name.capitalize }}<span
+                          class="text-1 text-muted d-block">{{payment_request.created_at }}</span></a></li>
                     <li class="dropdown-divider mx-n3"></li>
-                    <li><a class="dropdown-item text-center text-primary px-0" href="notifications.html">See all
+                    {% endfor %}
+                    <li><a class="dropdown-item text-center text-primary px-0" href="{% url 'payment_request_list' %}">See all
                         Notifications</a></li>
                   </ul>
                 </li>
@@ -116,6 +116,7 @@
                   </a>
                 </li>
                 {% endif %}
+
 
                 <ul class="dropdown-menu">
                   <li class="text-center text-3 py-2">Hi, {{ user_profile.user.first_name }}

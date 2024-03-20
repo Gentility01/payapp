@@ -88,7 +88,7 @@
 
                     <!-- Transaction List
             =============================== -->
-            {% for transaction  in transaction_history %}
+            {% for transaction  in latest_transaction_history %}
                     <div class="transaction-list">
                         <div class="transaction-item px-4 py-3" data-bs-toggle="modal"
                             data-bs-target="#transaction-detail">
@@ -171,7 +171,7 @@
 
                     <!-- View all Link
             =============================== -->
-                    <div class="text-center mt-4"><a href="transactions.html" class="btn-link text-3">View all<i
+                    <div class="text-center mt-4"><a href="{% url 'transaction_list' %}" class="btn-link text-3">View all<i
                                 class="fas fa-chevron-right text-2 ms-2"></i></a></div>
                     <!-- View all Link End -->
 
