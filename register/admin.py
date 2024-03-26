@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import  User, OnlineAccount , Adminstrator, UserProfile, BankAccount
+from .models import  User, OnlineAccount , Administrator, UserProfile, BankAccount
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -17,8 +17,8 @@ class OnlineAccountAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(Adminstrator)
-class AdminstratorAdmin(admin.ModelAdmin):
+@admin.register(Administrator)
+class AdministratorAdmin(admin.ModelAdmin):
     list_display = ['user']
     search_fields = ['user__username']
 

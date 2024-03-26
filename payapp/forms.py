@@ -31,6 +31,7 @@ class BankAccountForm(forms.ModelForm):
             raise forms.ValidationError("Routing number must be a 10-digit number.")
         return routing_number
 
+
 class WithdrawalForm(forms.Form):
     bank_account = forms.ModelChoiceField(queryset=BankAccount.objects.none(),
                     widget=forms.Select(
@@ -65,7 +66,7 @@ class CardForm(forms.ModelForm):
     def clean_card_number(self):
         card_number = self.cleaned_data['card_number']
         if len(card_number) != 10 or not card_number.isdigit():
-            raise forms.ValidationError("Card number must be a 16-digit number.")
+            raise forms.ValidationError("Card number must be a 10-digit number.")
         return card_number
     
     def clean_cvv(self):

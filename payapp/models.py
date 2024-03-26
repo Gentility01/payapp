@@ -3,11 +3,12 @@ from django.db import models
 from webapps2024.utils.models import TimeBasedModel
 from webapps2024.utils.choices import CURRENCY_CHOICES, TRASACTION_TYPE_CHOICES, CARD_TYPE, TRANSACTION_STATUS
 from register.models import User
+from django.conf import settings
 # Create your models here.
 
 class Transaction(TimeBasedModel):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_transactions')
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_transactions")
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_transactions')
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="received_transactions")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_type  = models.CharField(max_length=11, choices=TRASACTION_TYPE_CHOICES)
     status = models.CharField(max_length=11, choices=TRANSACTION_STATUS, blank=True, null=True)
@@ -16,26 +17,26 @@ class Transaction(TimeBasedModel):
         verbose_name_plural = "transactions"
 
 
-    def perform_transaction(self):
-        """
-        Perform the transaction and handle currency conversion if necessary.
-        """
-        if self.sender.onlineaccount.currency != self.recipient.onlineaccount.currency:
-            # Currency conversion needed
-            conversion_rate = CurrencyConversion.objects.get(currency_from=self.sender.onlineaccount.currency, currency_to=self.recipient.onlineaccount.currency)
-            converted_amount = conversion_rate.convert_currency(self.amount)
-            self.amount = converted_amount
-            self.currency = self.recipient.onlineaccount.currency
+    # def perform_transaction(self):
+    #     """
+    #     Perform the transaction and handle currency conversion if necessary.
+    #     """
+    #     if self.sender.onlineaccount.currency != self.recipient.onlineaccount.currency:
+    #         # Currency conversion needed
+    #         conversion_rate = CurrencyConversion.objects.get(currency_from=self.sender.onlineaccount.currency, currency_to=self.recipient.onlineaccount.currency)
+    #         converted_amount = conversion_rate.convert_currency(self.amount)
+    #         self.amount = converted_amount
+    #         self.currency = self.recipient.onlineaccount.currency
         
-        # Update sender's and receiver's account balances
-        self.sender.onlineaccount.balance -= self.amount
-        self.recipient.onlineaccount.balance += self.amount
-        self.sender.onlineaccount.save()
-        self.recipient.onlineaccount.save()
+    #     # Update sender's and receiver's account balances
+    #     self.sender.onlineaccount.balance -= self.amount
+    #     self.recipient.onlineaccount.balance += self.amount
+    #     self.sender.onlineaccount.save()
+    #     self.recipient.onlineaccount.save()
         
-        # Mark the transaction as completed
-        self.status = 'completed'
-        self.save()
+    #     # Mark the transaction as completed
+    #     self.status = 'completed'
+    #     self.save()
 
     def __str__(self):
         return f"{self.sender.username} sent {self.amount} {self.currency} to {self.recipient.username}"
@@ -63,8 +64,8 @@ class CurrencyConversion(models.Model):
 
 
 class TransactionHistory(TimeBasedModel):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_transaction_histories', blank=True, null=True)
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_transaction_histories', blank=True, null=True)
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_transaction_histories', blank=True, null=True)
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_transaction_histories', blank=True, null=True)
     description = models.CharField(max_length=200, blank=True, null=True)
     status = models.CharField(max_length=100, blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
@@ -72,7 +73,7 @@ class TransactionHistory(TimeBasedModel):
 
     class Meta(TimeBasedModel.Meta):
         base_manager_name = "prefetch_manager"
-        verbose_name_plural = "transactions"
+        verbose_name_plural = "Transaction histories"
     
 
     def __str__(self):
@@ -94,7 +95,7 @@ class TransactionHistory(TimeBasedModel):
 
 
 class Card(TimeBasedModel):
-    user  = models.ForeignKey(User, on_delete=models.CASCADE)
+    user  = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     card_type = models.CharField(max_length=20, choices=CARD_TYPE)
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=10000.00)
     card_number = models.CharField(max_length=10, blank=True, null=True)
@@ -103,8 +104,8 @@ class Card(TimeBasedModel):
 
 
 class PaymentRequest(TimeBasedModel):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_payment_requests')
-    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_payment_requests')
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_payment_requests')
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_payment_requests')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     message = models.TextField()
     status = models.CharField(max_length=11, choices=TRANSACTION_STATUS, blank=True, null=True)

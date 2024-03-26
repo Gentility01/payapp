@@ -1,17 +1,19 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect,render
-from django.views.generic import FormView, View
+from django.views.generic import FormView, View, CreateView
 from django.contrib.auth.views import LoginView  
-from register.forms import RegistrationForm, OnlineAccountForm, LoginForm
-from register.models import OnlineAccount, User
+from register.forms import RegistrationForm, OnlineAccountForm, LoginForm, AdministratorCreationForm
+from register.models import OnlineAccount, User, Administrator
 from payapp.models import CurrencyConversion
 from django.urls import reverse_lazy
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 from webapps2024.utils.choices import CURRENCY_CHOICES
 from webapps2024.utils.manual_exchange_rate import MANUAL_EXCHANGE_RATES
+from django.contrib.auth import get_user_model
 # Create your views here.
 
+# --------------------------------------------------------- SignUP ------------------------------------------------------------------------------------------
 class SignUpView(FormView):
     template_name = "register/signup.html"
     form_class = RegistrationForm
@@ -37,6 +39,8 @@ class SignUpView(FormView):
     
 signup_view = SignUpView.as_view()
 
+
+# --------------------------------------------------------- Online Account ------------------------------------------------------------------------------------------
 class OnlineAccountSetupViews(LoginRequiredMixin, FormView):
     login_url = reverse_lazy('register:login_view')
     template_name = "register/online_account_setup.html"
@@ -88,7 +92,9 @@ class OnlineAccountSetupViews(LoginRequiredMixin, FormView):
         return super().get(request, *args, **kwargs)
 
 online_account_views = OnlineAccountSetupViews.as_view()
-# Login view
+
+
+# --------------------------------------------------------- Login ------------------------------------------------------------------------------------------
 class LoginView(FormView):
     template_name = "register/login.html"
     form_class = LoginForm
@@ -119,6 +125,8 @@ class LoginView(FormView):
 login_view = LoginView.as_view()
 
 
+
+# --------------------------------------------------------- Logout ------------------------------------------------------------------------------------------
 class LogoutView(LoginRequiredMixin, View):
     login_url = reverse_lazy('register:login_view')
     def get(self, request):
@@ -129,3 +137,27 @@ class LogoutView(LoginRequiredMixin, View):
         return redirect('/')
 
 logout_view = LogoutView.as_view()
+
+
+
+# --------------------------------------------------------- Admin Registration ------------------------------------------------------------------------------------------
+
+
+class AdministratorCreateView(CreateView):
+    model = get_user_model()
+    form_class = AdministratorCreationForm
+    template_name = 'register/admin_register.html'
+
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+        login(self.request, user)  # Log in the user immediately after registration
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # Redirect to the Django admin index page
+        return reverse_lazy('admin:index')
+
+register_admin = AdministratorCreateView.as_view()

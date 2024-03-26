@@ -2,6 +2,7 @@
 from payapp.models import CurrencyConversion
 from decimal import Decimal, InvalidOperation
 MANUAL_EXCHANGE_RATES = {
+    ("USD", "USD"): 1,
     ("USD", "EUR"): 0.85,
     ("USD", "GBP"): 0.72,
     ("USD", "JPY"): 110.23,

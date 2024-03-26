@@ -20,15 +20,25 @@ class CurrencyConversionAdmin(admin.ModelAdmin):
     #     return obj.convert_currency(transaction)
     # display_converted_amount.short_description = 'Converted Amount'
 
-@admin.register(TransactionHistory)
 class TransactionHistoryAdmin(admin.ModelAdmin):
-    list_display = [ 'sender', 'recipient',  'bank_account', 'amount', 'description', 'status']
-    search_fields = ['sender', 'description']
+    list_display = ['sender', 'recipient', 'bank_account', 'amount', 'description', 'status', 'get_acceptance_status']
+    search_fields = ['sender__username', 'recipient__username', 'description']
     list_filter = ['status']
+
+    def get_acceptance_status(self, obj):
+        if obj.status == 'Accepted':
+            return 'Accepted'
+        elif obj.status == 'Rejected':
+            return 'Rejected'
+        else:
+            return 'Pending'
+
+    get_acceptance_status.short_description = 'Acceptance Status'
 
     def get_currency(self, obj):
         return obj.currency
-    get_currency.short_description = 'Currency'
+
+admin.site.register(TransactionHistory, TransactionHistoryAdmin)
 
 
 @admin.register(Card)

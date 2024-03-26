@@ -1,7 +1,15 @@
 asgiref==3.7.2
+certifi==2024.2.2
+chardet==4.0.0
 Django==5.0.3
+django-adminlte2==0.4.3
 django-auto-prefetch==1.8.0
+django-dark==0.1.9
 django-resized==1.0.2
+idna==2.10
 pillow==10.2.0
+requests==2.25.1
 sqlparse==0.4.4
 tzdata==2024.1
+urllib3==1.26.18
+uuid==1.30

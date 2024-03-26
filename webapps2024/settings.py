@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -138,5 +139,22 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "webapps2024/static")]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = "register.User"
+AUTH_USER_MODEL = "register.CustomUser"
 APPEND_SLASH = True
+
+
+#  JAZZMIN SETTINGS
+JAZZMIN_SETTINGS = {
+    "site_title": "PayApp-Admin",
+    "site_header": "PayApp-Admin",
+    "site_brand": "PayApp-Admin",
+    # "site_logo": "images/logo.png",
+    "login_logo": "PayApp-Admin",
+    "welcome_sign": "PayApp-Admin",
+    "copyright": "PayApp",
+    "search_model": "register.CustomUser",
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+    ]
+
+}

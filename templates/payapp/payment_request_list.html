@@ -43,8 +43,8 @@
                                     {% if payment_request.status == 'pending' %}
                                     <form method="post" action="{% url 'respond_to_payment_request' payment_request.pk %}">
                                         {% csrf_token %}
-                                        <button class="btn btn-sm btn-outline-secondary" type="submit" name="action" value="accept">Accept</button>
-                                        <button class="btn btn-sm btn-outline-danger"type="submit" name="action" value="reject">Decline</button>
+                                        <button class="btn btn-sm btn-outline-secondary" type="submit" name="action" value="accepted">Accept</button>
+                                        <button class="btn btn-sm btn-outline-danger"type="submit" name="action" value="rejected">Decline</button>
                                     
                                     </form>
                                     {% endif %}
