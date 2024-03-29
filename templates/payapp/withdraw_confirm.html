@@ -42,9 +42,12 @@
       </div>
     </div>
     <h2 class="fw-400 text-center mt-3 mb-4">Withdraw Money</h2>
+    {% include 'utils/_message.html' %}
     <form id="form-withdraw-money-confirm" method="post">
+      
       {% csrf_token %}
       <div class="row">
+        
         <div class="col-md-9 col-lg-7 col-xl-6 mx-auto">
           <!-- Withdraw Money Confirm -->
           <div class="bg-white shadow-sm rounded p-3 pt-sm-5 pb-sm-5 px-sm-5 mb-4">

@@ -122,6 +122,7 @@ class ConfirmationView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         """
         A method to get context data for the view, including the bank account and withdrawal details.
+        getting the withdrawal details from session
         """
         context = super().get_context_data(**kwargs)
         withdrawal_details = self.request.session.get('withdrawal_details') # getting the withdrawal details from session
@@ -172,7 +173,7 @@ class ConfirmationView(LoginRequiredMixin, TemplateView):
                 messages.success(request, 'Withdrawal successful')
                 return redirect('withdraw_success')
             else:
-                messages.error(request, 'Insufficient balance')
+                messages.warning(request, 'Insufficient balance')
         return self.render_to_response(self.get_context_data(request=request, form=form))
 
 withdraw_money_confirm = ConfirmationView.as_view()
@@ -190,12 +191,12 @@ class DepositeView(LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('register:login_view')
 
     def post(self, request, *args, **kwargs):
-        # process the form submission
+        # process the form submission getting the fileds from the form
         payment_method = request.POST.get("payment_method")
         amount = request.POST.get('amount')
 
         if payment_method == "Bank Accounts":
-            return redirect( reverse("bank_selection") + f"?amount={amount}")
+            return redirect( reverse("bank_selection") + f"?amount={amount}") # this will  redirect to the bank selection and 
         elif payment_method == "Credit or Debit Cards":
             return redirect( reverse("card_selection") + f"?amount={amount}")
         else:
@@ -217,6 +218,17 @@ class BankSelectionView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
+        """
+        A view to process a POST request to deposit an amount from a bank account to the user's online account.
+        
+        Parameters:
+            request (HttpRequest): The HTTP request object.
+            args (tuple): Additional positional arguments.
+            kwargs (dict): Additional keyword arguments.
+        
+        Returns:
+            HttpResponseRedirect: Redirects to the bank deposit receipt page.
+        """
         bank_account_id = request.POST.get("bank_account")
         amount = Decimal(request.POST.get("amount"))  # Convert amount to Decimal
         bank_account = get_object_or_404(BankAccount, id=bank_account_id, user=request.user)
@@ -333,6 +345,7 @@ class DirectPaymentFormView(LoginRequiredMixin, FormView):
 
 # ------------------------------------------------------------------Direct or send money confirmation ------------------------------------------------------------------------
 class DirectPaymentConfirmationView(LoginRequiredMixin, FormView):
+    login_url = reverse_lazy('register:login_view')
     template_name = "payapp/direct_payment_confirmation.html"
     form_class = DirectPaymentForm
 
@@ -421,7 +434,8 @@ direct_payment_confirmation_view = DirectPaymentConfirmationView.as_view()
 
 
 # ------------------------------------------------------------------Request Payment ------------------------------------------------------------------------
-class CreatePaymentRequestView(CreateView):
+class CreatePaymentRequestView(LoginRequiredMixin, CreateView):
+    login_url = reverse_lazy('register:login_view')
     model = PaymentRequest
     form_class = PaymentRequestForm
     template_name = 'payapp/request_payment.html'
@@ -467,6 +481,7 @@ payment_request_success = PaymentRequestSuccess.as_view()
 
 # ------------------------------------------------------------------------------------Payment Request List------------------------------------------------------------------------
 class PaymentRequestListView(LoginRequiredMixin, ListView):
+    login_url = reverse_lazy('register:login_view')
     model = PaymentRequest
     template_name = 'payapp/payment_request_list.html'
     context_object_name = 'payment_requests'
@@ -479,6 +494,7 @@ payment_request_list = PaymentRequestListView.as_view()
 
 # ------------------------------------------------------------------------------------ Respond to Payment Request------------------------------------------------------------------------
 class RespondToPaymentRequestView(LoginRequiredMixin, UpdateView):
+    login_url = reverse_lazy('register:login_view')
     model = PaymentRequest
     fields = ['status']
     template_name = 'respond_to_payment_request.html'
@@ -499,8 +515,10 @@ class RespondToPaymentRequestView(LoginRequiredMixin, UpdateView):
                     sender_account.save()
                     recipient_account.save()
                     messages.success(self.request, 'Payment request accepted!')
-                    TransactionHistory.objects.create(sender=payment_request.sender, recipient=payment_request.recipient, status="✔️", amount=payment_request.amount, description="Payment Request Accepted")
-                    TransactionHistory.objects.create(sender=payment_request.recipient, recipient=payment_request.sender, status="📥", amount=payment_request.amount, description="Payment Request Accepted" )
+                    TransactionHistory.objects.create(sender=payment_request.sender, recipient=payment_request.recipient, 
+                    status="✔️", amount=payment_request.amount, description="Payment Request Accepted")
+                    TransactionHistory.objects.create(sender=payment_request.recipient, recipient=payment_request.sender, 
+                    status="📥", amount=payment_request.amount, description="Payment Request Accepted" )
                 else:
                     messages.error(self.request, 'Insufficient balance to fulfill the payment request.')
                     return redirect('payment_failed')
@@ -517,6 +535,7 @@ class RespondToPaymentRequestView(LoginRequiredMixin, UpdateView):
 
 # ------------------------------------------------------------------------------------Transaction List------------------------------------------------------------------------
 class TransactionList(LoginRequiredMixin, ListView):
+    login_url = reverse_lazy('register:login_view')
     model = Transaction
     template_name = 'payapp/transaction_list.html'
     
