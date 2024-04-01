@@ -1,16 +1,18 @@
 from django.db.models import TextChoices
 from django.utils.translation import gettext_lazy as _
+
+
 class CURRENCY_CHOICES(TextChoices):
-    US_DOLLAR = ("USD", "🇺🇸 US Dollars")
-    EUROS = ("EUR", "🇪🇺 Euros")
-    YEN = ("JPY", "🇯🇵 Yen")
-    CHINESES_YEN =  ("CNY", "🇨🇳 Chinese Yuan")
-    RUPEE = ("INR", "🇮🇳 Rupee")
-    POUND = ("GBP", "🇬🇧 Pounds")
-    CANADIAN_DOLLAR = ("CAD", "🇨🇦 Canadian Dollars")
-    BITCOIN = ("BTC", "🔒 Bitcoin")
-    ETHEREUM = ("ETH", "🧬 Ethereum")
-    NAIRA = ("NGN", "🇳🇬 Nigerian Naira")
+    US_DOLLAR = ("USD", _("🇺🇸 US Dollars"))
+    EUROS = ("EUR", _("🇪🇺 Euros"))
+    POUND = ("GBP", _("🇬🇧 Pounds"))
+    # YEN = ("JPY", _("🇯🇵 Yen"))
+    # CHINESES_YEN = ("CNY", _("🇨🇳 Chinese Yuan"))
+    # RUPEE = ("INR", _("🇮🇳 Rupee"))
+    # CANADIAN_DOLLAR = ("CAD", _("🇨🇦 Canadian Dollars"))
+    # BITCOIN = ("BTC", _("🔒 Bitcoin"))
+    # ETHEREUM = ("ETH", _("🧬 Ethereum"))
+    # NAIRA = ("NGN", _("🇳🇬 Nigerian Naira"))
 
 
 class TRASACTION_TYPE_CHOICES(TextChoices):
