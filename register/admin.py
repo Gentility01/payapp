@@ -28,6 +28,6 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(BankAccount)
 class BankAccountAdmin(admin.ModelAdmin):
-    list_display = ['user', 'account_number', 'routing_number']
+    list_display = ['user', 'account_number', 'pin']
 
 

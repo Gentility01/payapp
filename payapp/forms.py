@@ -12,11 +12,11 @@ User = get_user_model()
 class BankAccountForm(forms.ModelForm):
     class Meta:
         model = BankAccount
-        fields = ['bank_name', 'account_number', 'routing_number']
+        fields = ['bank_name', 'account_number', 'pin']
         widgets = {
             'bank_name': forms.Select(attrs={'class': 'form-control'}),
             'account_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Account Number'}),
-            'routing_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Routing Number'}),
+            'pin': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Pin Number'}),
         }
 
     def clean_account_number(self):
@@ -25,11 +25,11 @@ class BankAccountForm(forms.ModelForm):
             raise forms.ValidationError("Account number must be a 10-digit number.")
         return account_number
 
-    def clean_routing_number(self):
-        routing_number = self.cleaned_data['routing_number']
-        if len(routing_number) != 10 or not routing_number.isdigit():
-            raise forms.ValidationError("Routing number must be a 10-digit number.")
-        return routing_number
+    def clean_pin(self):
+        pin = self.cleaned_data['pin']
+        if len(pin) != 4 or not pin.isdigit():
+            raise forms.ValidationError("Pin number must be a 10-digit number.")
+        return pin
 
 
 class WithdrawalForm(forms.Form):

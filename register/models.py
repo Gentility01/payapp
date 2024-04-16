@@ -108,7 +108,7 @@ class BankAccount(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bank_name = models.CharField(max_length=50, choices=BankNames, default=BankNames.ACCESS_BANK)
     account_number = models.CharField(max_length=50)
-    routing_number = models.CharField(max_length=50)
+    pin = models.CharField(max_length=50, blank=True, null=True)
     
 
     class Meta:
