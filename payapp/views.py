@@ -12,6 +12,7 @@ from django.contrib import messages
 from decimal import Decimal
 from django.db import transaction
 from webapps2024.utils.manual_exchange_rate import MANUAL_EXCHANGE_RATES
+from django.db import transaction
 
 from django.contrib import messages
 
@@ -111,6 +112,7 @@ class WithdrawalView(LoginRequiredMixin, FormView):
         }
         return super().form_valid(form)
 
+
 withdraw = WithdrawalView.as_view()
 
 
@@ -120,41 +122,36 @@ class ConfirmationView(LoginRequiredMixin, TemplateView):
     template_name = 'payapp/withdraw_confirm.html'
 
     def get_context_data(self, **kwargs):
-        """
-        A method to get context data for the view, including the bank account and withdrawal details.
-        getting the withdrawal details from session
-        """
         context = super().get_context_data(**kwargs)
-        withdrawal_details = self.request.session.get('withdrawal_details') # getting the withdrawal details from session
+        withdrawal_details = self.request.session.get('withdrawal_details')
         if withdrawal_details:
-            bank_account_id = withdrawal_details['bank_account_id']
-            bank_account = BankAccount.objects.get(pk=bank_account_id)
-            form_data = {
-                'bank_account': bank_account,
-                'amount': withdrawal_details['amount'],
-            }
-            # Create the form instance
-            form = WithdrawalForm(user=self.request.user, initial=form_data)
-            # Disable all form fields
-            for field in form.fields.values():
-                field.widget.attrs['disabled'] = True
-            context['form'] = form
+            bank_account_id = withdrawal_details.get('bank_account_id')
+            if bank_account_id:
+                try:
+                    bank_account = BankAccount.objects.get(pk=bank_account_id)
+                except BankAccount.DoesNotExist:
+                    bank_account = None
+            else:
+                bank_account = None
+
+            amount = withdrawal_details.get('amount')
+
+            if bank_account:
+                form = WithdrawalForm(user=self.request.user, initial={'bank_account': bank_account, 'amount': amount})
+                for field in form.fields.values():
+                    field.widget.attrs['disabled'] = True
+            else:
+                messages.error(self.request, 'Bank account details are incomplete')
+                return redirect('withdraw_money')  # Redirect to the withdrawal form page if bank account details are incomplete
         else:
             messages.error(self.request, 'Withdrawal details not found')
+            return redirect('withdraw_money')  # Redirect to the withdrawal form page if withdrawal details are not found
+
+        context['form'] = form
+        context['bank_account'] = bank_account
         return context
 
     def post(self, request, *args, **kwargs):
-        """
-        Process a POST request to withdraw funds from the user's online account to a specified bank account.
-
-        Args:
-            request (HttpRequest): The request object containing the POST data.
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            HttpResponse: The response object containing the rendered template or a redirect to the withdrawal success page.
-        """
         form = WithdrawalForm(request.POST, user=request.user)
         if form.is_valid():
             bank_account = form.cleaned_data['bank_account']
@@ -167,15 +164,14 @@ class ConfirmationView(LoginRequiredMixin, TemplateView):
                 # Record the transaction history
                 TransactionHistory.objects.create(
                     sender=request.user, description='Withdrawal to bank account',
-                     status='✔️', amount=amount, bank_account=bank_account)
+                    status='✔️', amount=amount, bank_account=bank_account)
 
                 del request.session['withdrawal_details']
                 messages.success(request, 'Withdrawal successful')
                 return redirect('withdraw_success')
             else:
                 messages.warning(request, 'Insufficient balance')
-        return self.render_to_response(self.get_context_data(request=request, form=form))
-
+        return self.render_to_response(self.get_context_data(request=request))
 withdraw_money_confirm = ConfirmationView.as_view()
 
 # ------------------------------------------------------------------Widthdraw success ------------------------------------------------------------------------
@@ -302,6 +298,7 @@ class CardSelectionView(LoginRequiredMixin, TemplateView):
             amount=amount,)
         
         return redirect(reverse('card_deposit_receipt', kwargs={'pk': card_id}) + f'?amount={amount}')
+
 
 card_selection = CardSelectionView.as_view()
 
@@ -500,13 +497,12 @@ class RespondToPaymentRequestView(LoginRequiredMixin, UpdateView):
     template_name = 'respond_to_payment_request.html'
     success_url = reverse_lazy('payment_request_list')
 
+    @transaction.atomic
     def form_valid(self, form):
         payment_request = form.instance
-        print("Payment Request Status:", payment_request.status)
         try:
             sender_account = OnlineAccount.objects.get(user=payment_request.sender)
             recipient_account = OnlineAccount.objects.get(user=payment_request.recipient)
-             # Add print statements to verify sender and recipient accounts
             action = self.request.POST.get('action')
             if action == 'accepted':
                 if recipient_account.balance >= payment_request.amount:
@@ -514,6 +510,8 @@ class RespondToPaymentRequestView(LoginRequiredMixin, UpdateView):
                     recipient_account.balance -= payment_request.amount
                     sender_account.save()
                     recipient_account.save()
+                    payment_request.status = 'SUCCESS'  # Update status to SUCCESS
+                    payment_request.save()  # Save the updated status
                     messages.success(self.request, 'Payment request accepted!')
                     TransactionHistory.objects.create(sender=payment_request.sender, recipient=payment_request.recipient, 
                     status="✔️", amount=payment_request.amount, description="Payment Request Accepted")
@@ -523,6 +521,8 @@ class RespondToPaymentRequestView(LoginRequiredMixin, UpdateView):
                     messages.error(self.request, 'Insufficient balance to fulfill the payment request.')
                     return redirect('payment_failed')
             elif action == 'rejected':
+                payment_request.status = 'FAILED'  # Update status to FAILED
+                payment_request.save()  # Save the updated status
                 messages.info(self.request, 'Payment request rejected!')
         except OnlineAccount.DoesNotExist:
             messages.error(self.request, 'One of the accounts does not exist.')
@@ -531,7 +531,6 @@ class RespondToPaymentRequestView(LoginRequiredMixin, UpdateView):
 
     def get_queryset(self):
         return PaymentRequest.objects.filter(recipient=self.request.user)
-
 
 # ------------------------------------------------------------------------------------Transaction List------------------------------------------------------------------------
 class TransactionList(LoginRequiredMixin, ListView):
