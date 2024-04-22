@@ -1,7 +1,7 @@
 import json
 from django.shortcuts import redirect, get_object_or_404, render
 from django.views.generic import TemplateView, FormView, DetailView, ListView, RedirectView, UpdateView
-from register.models import  BankAccount,OnlineAccount, User
+from register.models import  BankAccount,OnlineAccount, User, BankAccount
 from payapp.models import TransactionHistory, Card, CurrencyConversion, Transaction, PaymentRequest
 from payapp.forms import BankAccountForm, WithdrawalForm, CardForm, DirectPaymentForm, PaymentRequestForm
 from django.core.serializers.json import DjangoJSONEncoder 
@@ -428,6 +428,26 @@ payment_failed = PaymentFailed.as_view()
 payment_success_view = PaymentSuccess.as_view()
 direct_payment_view = DirectPaymentFormView.as_view()
 direct_payment_confirmation_view = DirectPaymentConfirmationView.as_view()
+
+
+
+
+#-----------------------------------------------------List of all Cards-------------------------------------------
+
+class CardListView(ListView):
+    login_url = reverse_lazy("register:login_view")
+    model = Card
+    template_name = "payapp/card_list.html"
+
+card_list_view = CardListView.as_view()
+
+#-------------------------------------------------------List of all Banks---------------------------------------
+class BankListView(ListView):
+    login_url = reverse_lazy("register:login_view")
+    model = BankAccount
+    template_name  = "payapp/bank_list.html"
+
+bank_list_view = BankListView.as_view()
 
 
 # ------------------------------------------------------------------Request Payment ------------------------------------------------------------------------

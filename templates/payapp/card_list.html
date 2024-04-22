@@ -1,0 +1,174 @@
+{% extends 'utils/__nav.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<!-- Content
+  ============================================= -->
+<div id="content" class="py-4">
+  <div class="container">
+    <div class="row">
+     
+      {% include 'utils/__sidebar.html' %}
+
+      <!-- Middle Panel
+        ============================================= -->
+      <div class="col-lg-9">
+
+        <!-- Credit or Debit Cards
+          ============================================= -->
+        <div class="bg-white shadow-sm rounded p-4 mb-4">
+          <h3 class="text-5 fw-400 mb-4">Cards <span class="text-muted text-4">(for payments)</span>
+          </h3>
+          <hr class="mb-4 mx-n4">
+          <div class="row g-3">
+            {% for card in object_list %}
+            <div class="col-12 col-md-6 col-lg-4">
+              <div class="account-card account-card-primary text-white rounded p-3">
+                <p class="text-4">XXXX-XXXX-XXXX-{{card.card_number|slice:4}}</p>
+                <p class="d-flex align-items-center"> <span
+                    class="account-card-expire text-uppercase d-inline-block opacity-7 me-2">Valid<br>
+                    thru<br>
+                  </span> <span class="text-4 opacity-9">07/24</span> <span
+                    class="badge bg-warning text-dark text-0 fw-500 rounded-pill px-2 ms-auto">Primary</span> </p>
+                <p class="d-flex align-items-center m-0"> <span class="text-uppercase fw-500">{{user_profile.user.first_name}} {{user_profile.user.last_name}}</span> <img
+                    class="ms-auto" src="images/payment/visa.png" alt="visa" title=""> </p>
+                <div class="account-card-overlay rounded"> <a href="#" data-bs-target="#edit-card-details"
+                    data-bs-toggle="modal" class="text-light btn-link mx-2"><span class="me-1"><i
+                        class="fas fa-edit"></i></span>Edit</a> <a href="#" class="text-light btn-link mx-2"><span
+                      class="me-1"><i class="fas fa-minus-circle"></i></span>Delete</a> </div>
+              </div>
+            </div>
+            {% endfor %}
+            
+            <div class="col-12 col-md-6 col-lg-4"> <a href="{% url 'create_card' %}" 
+                class="account-card-new d-flex align-items-center rounded h-100 p-3 mb-4 mb-lg-0">
+                <p class="w-100 text-center lh-base m-0"> <span class="text-3"><i class="fas fa-plus-circle"></i></span>
+                  <span class="d-block text-body text-3">Add New Card</span> </p>
+              </a> </div>
+          </div>
+        </div>
+        <!-- Edit Card Details Modal
+          ================================== -->
+        <div id="edit-card-details" class="modal fade" role="dialog" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title fw-400">Update Card</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4">
+                <form id="updateCard" method="post">
+                  <div class="mb-3">
+                    <label for="edircardNumber" class="form-label">Card Number</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><img class="ms-auto" src="images/payment/visa.png" alt="visa"
+                          title=""></span>
+                      <input type="text" class="form-control" data-bv-field="edircardNumber" id="edircardNumber"
+                        disabled="" value="XXXXXXXXXXXX4151" placeholder="Card Number">
+                    </div>
+                  </div>
+                  <div class="row g-3 mb-3">
+                    <div class="col-lg-6">
+                      <label for="editexpiryDate" class="form-label">Expiry Date</label>
+                      <input id="editexpiryDate" type="text" class="form-control" data-bv-field="editexpiryDate"
+                        required="" value="07/24" placeholder="MM/YY">
+                    </div>
+                    <div class="col-lg-6">
+                      <label for="editcvvNumber" class="form-label">CVV <span class="text-info ms-1"
+                          data-bs-toggle="tooltip"
+                          title="For Visa/Mastercard, the three-digit CVV number is printed on the signature panel on the back of the card immediately after the card's account number. For American Express, the four-digit CVV number is printed on the front of the card above the card account number."><i
+                            class="fas fa-question-circle"></i></span></label>
+                      <input id="editcvvNumber" type="password" class="form-control" data-bv-field="editcvvNumber"
+                        required="" value="321" placeholder="CVV (3 digits)">
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="editcardHolderName" class="form-label">Card Holder Name</label>
+                    <input type="text" class="form-control" data-bv-field="editcardHolderName" id="editcardHolderName"
+                      required="" value="Smith Rhodes" placeholder="Card Holder Name">
+                  </div>
+                  <div class="d-grid mt-4"><button class="btn btn-primary" type="submit">Update Card</button></div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Add New Card Details Modal
+          ================================== -->
+        <div id="add-new-card-details" class="modal fade" role="dialog" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title fw-400">Add a Card</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body p-4">
+                <form id="addCard" method="post">
+                  <div class="btn-group d-flex mb-3" role="group">
+                    <input type="radio" class="btn-check" name="options" id="option1" autocomplete="off" checked="">
+                    <label class="btn btn-outline-secondary btn-sm shadow-none w-100" for="option1">Debit</label>
+
+                    <input type="radio" class="btn-check" name="options" id="option2" autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm shadow-none w-100" for="option2">Credit</label>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label for="cardType" class="form-label">Card Type</label>
+                      <select id="cardType" class="form-select" required="">
+                        <option value="">Card Type</option>
+                        <option>Visa</option>
+                        <option>MasterCard</option>
+                        <option>American Express</option>
+                        <option>Discover</option>
+                      </select>
+                    </div>
+                    <div class="col-12">
+                      <label for="cardNumber" class="form-label">Card Number</label>
+                      <input type="text" class="form-control" data-bv-field="cardnumber" id="cardNumber" required=""
+                        value="" placeholder="Card Number">
+                    </div>
+                    <div class="col-lg-6">
+                      <label for="expiryDate" class="form-label">Expiry Date</label>
+                      <input id="expiryDate" type="text" class="form-control" data-bv-field="expiryDate" required=""
+                        value="" placeholder="MM/YY">
+                    </div>
+                    <div class="col-lg-6">
+                      <label for="cvvNumber" class="form-label">CVV <span class="text-info ms-1"
+                          data-bs-toggle="tooltip"
+                          title="For Visa/Mastercard, the three-digit CVV number is printed on the signature panel on the back of the card immediately after the card's account number. For American Express, the four-digit CVV number is printed on the front of the card above the card account number."><i
+                            class="fas fa-question-circle"></i></span></label>
+                      <input id="cvvNumber" type="password" class="form-control" data-bv-field="cvvnumber" required=""
+                        value="" placeholder="CVV (3 digits)">
+                    </div>
+                    <div class="col-12">
+                      <label for="cardHolderName" class="form-label">Card Holder Name</label>
+                      <input type="text" class="form-control" data-bv-field="cardholdername" id="cardHolderName"
+                        required="" value="" placeholder="Card Holder Name">
+                    </div>
+                    <div class="col-12 d-grid mt-4">
+                      <button class="btn btn-primary" type="submit">Add Card</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Credit or Debit Cards End -->
+
+        <!-- Bank Accounts
+          ============================================= -->
+        
+       
+
+
+      </div>
+      <!-- Middle Panel End -->
+    </div>
+  </div>
+</div>
+<!-- Content end -->
+
+{% endblock content %}
