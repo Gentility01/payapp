@@ -4,39 +4,44 @@ from webapps2024.utils.models import TimeBasedModel
 from webapps2024.utils.choices import CURRENCY_CHOICES, TRASACTION_TYPE_CHOICES, CARD_TYPE, TRANSACTION_STATUS
 from register.models import User
 from django.conf import settings
+from webapps2024.utils.manual_exchange_rate import MANUAL_EXCHANGE_RATES
 # Create your models here.
 
 class Transaction(TimeBasedModel):
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_transactions')
     recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="received_transactions")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    transaction_type  = models.CharField(max_length=11, choices=TRASACTION_TYPE_CHOICES)
-    status = models.CharField(max_length=11, choices=TRANSACTION_STATUS, blank=True, null=True)
+    transaction_type  = models.CharField(max_length=11, choices=TRASACTION_TYPE_CHOICES.choices)
+    status = models.CharField(max_length=11, choices=TRANSACTION_STATUS.choices, blank=True, null=True)
+    models.CharField(max_length=3, choices=CURRENCY_CHOICES.choices)  
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES.choices)
+    
     class Meta(TimeBasedModel.Meta):
         base_manager_name = "prefetch_manager"
         verbose_name_plural = "transactions"
 
-
-    # def perform_transaction(self):
-    #     """
-    #     Perform the transaction and handle currency conversion if necessary.
-    #     """
-    #     if self.sender.onlineaccount.currency != self.recipient.onlineaccount.currency:
-    #         # Currency conversion needed
-    #         conversion_rate = CurrencyConversion.objects.get(currency_from=self.sender.onlineaccount.currency, currency_to=self.recipient.onlineaccount.currency)
-    #         converted_amount = conversion_rate.convert_currency(self.amount)
-    #         self.amount = converted_amount
-    #         self.currency = self.recipient.onlineaccount.currency
+    def perform_transaction(self):
+        """
+        Perform the transaction and handle currency conversion if necessary.
+        """
+        if self.sender.onlineaccount.currency != self.recipient.onlineaccount.currency:
+            # Currency conversion needed
+            exchange_rate = MANUAL_EXCHANGE_RATES.get((self.sender.onlineaccount.currency, self.recipient.onlineaccount.currency))
+            if exchange_rate is None:
+                raise ValueError("Exchange rate not found for currencies")
+            converted_amount = self.amount * exchange_rate
+            self.amount = converted_amount
+            self.currency = self.recipient.onlineaccount.currency
         
-    #     # Update sender's and receiver's account balances
-    #     self.sender.onlineaccount.balance -= self.amount
-    #     self.recipient.onlineaccount.balance += self.amount
-    #     self.sender.onlineaccount.save()
-    #     self.recipient.onlineaccount.save()
+        # Update sender's and receiver's account balances
+        self.sender.onlineaccount.balance -= self.amount
+        self.recipient.onlineaccount.balance += self.amount
+        self.sender.onlineaccount.save()
+        self.recipient.onlineaccount.save()
         
-    #     # Mark the transaction as completed
-    #     self.status = 'completed'
-    #     self.save()
+        # Mark the transaction as completed
+        self.status = 'completed'
+        self.save()
 
     def __str__(self):
         return f"{self.sender.username} sent {self.amount} {self.currency} to {self.recipient.username}"

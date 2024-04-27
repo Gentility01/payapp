@@ -29,7 +29,12 @@
               =============================== -->
               <div class="bg-white shadow-sm rounded text-center p-3 mb-4">
                 <div class="text-17 text-light my-3"><i class="fas fa-wallet"></i></div>
-                <h3 class="text-9 fw-400">${{ online_account.balance }}</h3>
+                <h3 class="text-9 fw-400"> {% if online_account.currency == 'USD' %}${{ online_account.balance}}
+                  {% elif online_account.currency == 'EUR' %}€{{ online_account.balance}}
+                  {% elif online_account.currency == 'GBP' %}£{{ online_account.balance}}
+                  {% endif %}
+
+                </h3>
                 <p class="mb-2 text-muted opacity-8">Available Balance</p>
                 <hr class="mx-n3">
                 <div class="d-flex"><a href="{% url 'withdraw' %}" class="btn-link me-auto">Withdraw</a> <a

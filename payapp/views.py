@@ -402,7 +402,7 @@ class DirectPaymentConfirmationView(LoginRequiredMixin, FormView):
             recipient_account.save()
             
             # Create a transaction record for the payment
-            Transaction.objects.create(sender=sender, recipient=recipient, amount=amount, transaction_type="direct_payment")
+            Transaction.objects.create(sender=sender, recipient=recipient, amount=amount, currency='USD', transaction_type="direct_payment")
             
             # Create transaction history records for both sender and recipient
             TransactionHistory.objects.create(sender=sender, recipient=recipient, status="✔️", amount=amount, description="Direct payment (sent)")
@@ -412,8 +412,8 @@ class DirectPaymentConfirmationView(LoginRequiredMixin, FormView):
         self.request.session.pop('payment_data', None)
 
         return redirect('payment_success')
-
-
+    
+    
 # ------------------------------------------------------------------Successful Payment Trasaction ------------------------------------------------------------------------
 class PaymentSuccess( LoginRequiredMixin, TemplateView):
     login_url = reverse_lazy('register:login_view')
