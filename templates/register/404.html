@@ -1,0 +1,29 @@
+{% extends 'base.html' %} 
+
+{% block content %}
+    
+
+    
+  
+ 
+  
+  <!-- Content
+  ============================================= -->
+  <div id="content"> 
+    
+    <!-- 404
+    ============================================= -->
+    <section class="section">
+      <div class="container text-center">
+        <h2 class="text-25 mb-0">404</h2>
+        <h3 class="text-6 mb-3">oops! The page you requested was not found!</h3>
+        <p class="text-3 text-muted">The page you are looking for was moved, removed, renamed or might never existed.</p>
+        <a href="{% url 'homepage' %}" class="btn btn-primary shadow-none px-5 m-2">Home</a> <a href="#" class="btn btn-outline-dark shadow-none px-5 m-2">Back</a>
+	  </div>
+    </section>
+    <!-- 404 end --> 
+    
+  </div>
+  <!-- Content end --> 
+  
+{% endblock content %}

@@ -163,3 +163,9 @@ class AdministratorCreateView(CreateView):
         return reverse_lazy('admin:index')
 
 register_admin = AdministratorCreateView.as_view()
+
+
+
+
+def error_404(request, exception):
+    return render(request, 'register/404.html', status=404)
