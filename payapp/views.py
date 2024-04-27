@@ -16,6 +16,12 @@ from django.db import transaction
 
 from django.contrib import messages
 
+from rest_framework import generics
+from rest_framework.response import Response
+from .serializers import CurrencyConversionSerializer
+from rest_framework.views import APIView
+from rest_framework import status
+
 
 
 # Create your views here.
@@ -560,4 +566,22 @@ class TransactionList(LoginRequiredMixin, ListView):
     
 transaction_list = TransactionList.as_view()
 
+
+# ------------------------------------------------------------------------------------Drf section------------------------------------------------------------------------
+
+class ConvertCurrencyAPIView(APIView):
+    def get(self, request, currency1, currency2, amount_of_currency1):
+        serializer = CurrencyConversionSerializer(data={'currency_from': currency1, 'currency_to': currency2, 'amount_of_currency_from': amount_of_currency1})
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+        currency_from = serializer.validated_data['currency_from']
+        currency_to = serializer.validated_data['currency_to']
+        amount_of_currency_from = Decimal(serializer.validated_data['amount_of_currency_from'])  # Convert to Decimal
+        
+        if (currency_from, currency_to) in MANUAL_EXCHANGE_RATES:
+            exchange_rate = Decimal(MANUAL_EXCHANGE_RATES[(currency_from, currency_to)])  # Convert to Decimal
+            converted_amount = amount_of_currency_from * exchange_rate
+            return Response({'conversion_rate': exchange_rate, 'converted_amount': converted_amount}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'One or both currencies not supported'}, status=status.HTTP_400_BAD_REQUEST)

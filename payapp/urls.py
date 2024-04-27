@@ -27,4 +27,10 @@ urlpatterns = [
     path('respond_to_payment/<int:pk>/', views.RespondToPaymentRequestView.as_view(), name='respond_to_payment_request'),
     path("payment_request_success", views.payment_request_success, name="payment_request_success"),
     path("transaction_list", views.transaction_list, name="transaction_list"),
+
+    # API path
+    path('conversion/<str:currency1>/<str:currency2>/<str:amount_of_currency1>/', views.ConvertCurrencyAPIView.as_view(), name='conversion'),
 ]
+
+
+
