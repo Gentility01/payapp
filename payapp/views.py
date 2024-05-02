@@ -4,7 +4,7 @@ from django.views.generic import TemplateView, FormView, DetailView, ListView, R
 from register.models import  BankAccount,OnlineAccount, User, BankAccount
 from payapp.models import TransactionHistory, Card, CurrencyConversion, Transaction, PaymentRequest
 from payapp.forms import BankAccountForm, WithdrawalForm, CardForm, DirectPaymentForm, PaymentRequestForm
-from django.core.serializers.json import DjangoJSONEncoder 
+# from django.core.serializers.json import DjangoJSONEncoder 
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin

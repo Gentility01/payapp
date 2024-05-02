@@ -29,7 +29,7 @@ urlpatterns = [
     path("transaction_list", views.transaction_list, name="transaction_list"),
 
     # API path
-    path('conversion/<str:currency1>/<str:currency2>/<str:amount_of_currency1>/', views.ConvertCurrencyAPIView.as_view(), name='conversion'),
+    # path('conversion/<str:currency1>/<str:currency2>/<str:amount_of_currency1>/', views.ConvertCurrencyAPIView.as_view(), name='conversion'),
 ]
 
 
